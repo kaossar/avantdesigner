@@ -68,11 +68,27 @@ export async function POST(req: NextRequest) {
         // 4. Deduct Credit
         await CreditManager.deductCredit(userId);
 
-        // 5. Return Result
+        // 5. Analyze Logic
+        // TODO: Get contract type from FormData (frontend needs to send it)
+        // For now, default to 'housing' to test the rules we just wrote
+        const contractType = 'housing';
+
+        const { AnalysisEngine } = require('@/lib/analysis/engine');
+
+        // Define if AI should be enabled (check env or query param)
+        const enableAi = !!process.env.HUGGINGFACE_API_KEY;
+
+        const report = await AnalysisEngine.analyze(text, {
+            contractType,
+            enableAi
+        });
+
+        // 6. Return Result
         return NextResponse.json({
             success: true,
-            text: text,
-            creditsRemaining: 99, // Mock
+            data: report, // The full structured report
+            text: text, // Keep returning text for debug/preview
+            creditsRemaining: 99,
             message: 'Analysis successful'
         });
 

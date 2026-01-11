@@ -62,14 +62,19 @@ npm start
 - ✅ Vérification Crédits (Structure Mock en place)
 - ✅ Routing API configuré (`src/app/api/...`)
 
-#### Phase 6 : Moteur d'Analyse (Prochaine Étape)
-- [ ] Règles déterministes
-- [ ] Détection clauses à risque
-- [ ] Intégration IA (Hugging Face/Mistral)
-- [ ] Système de scoring
-- [ ] Génération reformulations
+#### Phase 6 : Moteur d'Analyse (Terminé ✅)
+- ✅ Moteur Hybride : Règles Déterministes + IA
+- ✅ Règles "Housing" codées (Regex pour frais, délais, etc.)
+- ✅ Service IA via **Hugging Face Inference API**
+    - Utilise le modèle **Mistral-7B-Instruct** (Open Source)
+    - Analyse les subtilités et ambiguïtés
+    - Fallback automatique sur les règles si l'IA échoue
+- ✅ Système de Scoring (Trusted Score)
 
-#### Phase 7 : Interface Résultats
+#### Phase 7 : Interface Résultats (Prochaine Étape)
+- [ ] Page de résultats visuelle
+- [ ] Jauges de risque
+- [ ] Affichage des "Attention Points"
 - [ ] Page résultats avec score
 - [ ] Liste des clauses
 - [ ] Détails par clause
