@@ -55,15 +55,14 @@ npm start
 - ✅ Intégration Tesseract.js OCR
 - ✅ Prévisualisation
 
-#### Phase 5 : Backend & API
-- [ ] Vérification des crédits
-- [ ] API upload vers Vercel Blob
-- [ ] Extraction PDF (PDF.js)
-- [ ] Extraction DOCX (Mammoth.js)
-- [ ] Pipeline OCR
-- [ ] Normalisation texte
+#### Phase 5 : Backend & API (Terminé ✅)
+- ✅ API d'analyse `/api/analyze`
+- ✅ Extraction PDF (pdf-parse)
+- ✅ Extraction DOCX (mammoth)
+- ✅ Vérification Crédits (Structure Mock en place)
+- ✅ Routing API configuré (`src/app/api/...`)
 
-#### Phase 6 : Moteur d'Analyse
+#### Phase 6 : Moteur d'Analyse (Prochaine Étape)
 - [ ] Règles déterministes
 - [ ] Détection clauses à risque
 - [ ] Intégration IA (Hugging Face/Mistral)
@@ -295,8 +294,8 @@ SESSION_SECRET=...
 
 ## 🚀 Prochaines Étapes Prioritaires
 
-1. **Phase 5**: Backend & API (Extraction, Crédits, OCR serveur)
-2. **Phase 6**: Développer le moteur d'analyse avec règles + IA
+1. **Phase 6**: Développer le moteur d'analyse avec règles + IA
+2. **Phase 7**: Créer l'interface de résultats
 3. **Phase 7**: Créer l'interface de résultats
 4. **Phase 8**: Intégrer Stripe pour les paiements
 5. **Phase 8**: Intégrer Stripe pour les paiements

@@ -21,10 +21,10 @@ export function UploadSection() {
         setStep('preview');
         setFile(fileObj);
 
-        // Create preview URL
+        // Preview Logic
         if (fileObj.type.startsWith('image/')) {
             setImagePreview(URL.createObjectURL(fileObj));
-            // OCR
+            // Client-side OCR for images (faster feedback)
             try {
                 const result = await OcrService.scanImage(fileObj);
                 setExtractedText(result.text);
@@ -33,8 +33,28 @@ export function UploadSection() {
                 setExtractedText("Erreur de lecture OCR.");
             }
         } else {
-            // PDF/DOCX handling would go here (mock for now)
-            setExtractedText("Contenu du fichier " + fileObj.name + " extrait avec succès (Simulation).");
+            // Server-side extraction for PDF/DOCX
+            const formData = new FormData();
+            formData.append('file', fileObj);
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erreur lors de l\'analyse');
+                }
+
+                setExtractedText(data.text);
+                console.log("Analysis success:", data);
+            } catch (error) {
+                console.error("API Analysis Error:", error);
+                setExtractedText("Erreur: Impossible d'extraire le texte du document. Veuillez réessayer.");
+            }
         }
 
         setIsProcessing(false);
