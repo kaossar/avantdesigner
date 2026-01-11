@@ -75,14 +75,14 @@ const plans = [
         cta: 'Acheter le pack',
         href: '/analyser',
         popular: false,
-        badge: 'Meilleure valeur',
+        badge: 'Meilleure Valeur',
     },
 ];
 
 export function PricingSection() {
     return (
-        <section id="tarifs" className="py-20 bg-neutral-50">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="tarifs" className="py-32 bg-white">
+            <div className="container mx-auto px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl sm:text-5xl font-bold font-display text-neutral-900 mb-4">
                         Tarifs simples et transparents
@@ -105,7 +105,7 @@ export function PricingSection() {
                         >
                             {plan.badge && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                                    <span className="bg-gradient-primary text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+                                    <span className="bg-gradient-to-r from-primary-600 to-primary-900 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
                                         {plan.badge}
                                     </span>
                                 </div>

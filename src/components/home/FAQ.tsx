@@ -50,8 +50,8 @@ export function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     return (
-        <section id="faq" className="py-20 bg-neutral-50">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="faq" className="py-32 bg-slate-50">
+            <div className="container mx-auto px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl sm:text-5xl font-bold font-display text-neutral-900 mb-4">
                         Questions fréquentes

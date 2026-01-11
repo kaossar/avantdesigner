@@ -48,14 +48,15 @@ npm start
 
 ### 🚧 Phases Restantes
 
-#### Phase 4 : Upload & Scan de Documents
-- [ ] Interface d'upload multi-format
-- [ ] Drag & drop
-- [ ] Scanner caméra (mobile/desktop)
-- [ ] Intégration Tesseract.js OCR
-- [ ] Prévisualisation
+#### Phase 4 : Upload & Scan de Documents (Frontend ✅)
+- ✅ Interface d'upload multi-format
+- ✅ Drag & drop
+- ✅ Scanner caméra (mobile/desktop)
+- ✅ Intégration Tesseract.js OCR
+- ✅ Prévisualisation
 
 #### Phase 5 : Backend & API
+- [ ] Vérification des crédits
 - [ ] API upload vers Vercel Blob
 - [ ] Extraction PDF (PDF.js)
 - [ ] Extraction DOCX (Mammoth.js)
@@ -294,10 +295,10 @@ SESSION_SECRET=...
 
 ## 🚀 Prochaines Étapes Prioritaires
 
-1. **Phase 4**: Créer l'interface d'upload avec scan caméra
-2. **Phase 5**: Implémenter l'extraction de texte (PDF, DOCX, OCR)
-3. **Phase 6**: Développer le moteur d'analyse avec règles + IA
-4. **Phase 7**: Créer l'interface de résultats
+1. **Phase 5**: Backend & API (Extraction, Crédits, OCR serveur)
+2. **Phase 6**: Développer le moteur d'analyse avec règles + IA
+3. **Phase 7**: Créer l'interface de résultats
+4. **Phase 8**: Intégrer Stripe pour les paiements
 5. **Phase 8**: Intégrer Stripe pour les paiements
 
 ## 💡 Notes Importantes
