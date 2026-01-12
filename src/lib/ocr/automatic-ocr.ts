@@ -1,105 +1,76 @@
 /**
- * Automatic OCR Service for Scanned PDFs
+ * Professional PDF Handler with Automatic OCR
  * 
- * Simplified approach using Tesseract.js directly
- * For production: Would use pdf2pic for better quality
- * For MVP: Direct OCR on PDF buffer
+ * Handles DOMMatrix error gracefully in Node.js environment
  */
 
-import Tesseract from 'tesseract.js';
-import { writeFile, unlink, readFile } from 'fs/promises';
-import path from 'path';
-import os from 'os';
+import { performAutomaticOCR } from '../ocr/automatic-ocr';
 
-interface OCRResult {
-    text: string;
-    confidence: number;
-    method: 'ocr';
-    pageCount: number;
-}
+const TEXT_THRESHOLD = 50;
 
-/**
- * Perform automatic OCR on a scanned PDF
- * Simplified version - converts first page only for MVP
- */
-export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult> {
-    console.log('[Auto OCR] Starting automatic OCR for scanned PDF...');
-    console.log('[Auto OCR] PDF size:', pdfBuffer.length, 'bytes');
+export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
+    console.log('[PDF Extractor] Starting professional PDF processing...');
 
-    const tempDir = os.tmpdir();
-    const tempPdfPath = path.join(tempDir, `pdf-ocr-${Date.now()}.pdf`);
+    // Step 1: Try native text extraction
+    const nativeResult = await tryNativeExtraction(buffer);
+
+    console.log('[PDF Extractor] Detection result:', {
+        textLength: nativeResult.text.length,
+        isScanned: nativeResult.isScanned,
+        pageCount: nativeResult.pageCount
+    });
+
+    // Step 2: Decision - Native or OCR
+    if (!nativeResult.isScanned && nativeResult.text.trim().length >= TEXT_THRESHOLD) {
+        // PDF has native text - use it
+        console.log('[PDF Extractor] ✅ Using native text extraction');
+        return nativeResult.text.trim();
+    }
+
+    // Step 3: PDF is scanned - Automatic OCR
+    console.log('[PDF Extractor] ⚠️ Scanned PDF detected - starting automatic OCR...');
 
     try {
-        // Save PDF temporarily
-        await writeFile(tempPdfPath, pdfBuffer);
-        console.log('[Auto OCR] PDF saved to:', tempPdfPath);
-
-        // For MVP: Use Tesseract directly on PDF
-        // Tesseract.js can handle PDF directly (experimental)
-        console.log('[Auto OCR] Starting Tesseract OCR...');
-
-        const result = await Tesseract.recognize(
-            tempPdfPath,
-            'fra', // French
-            {
-                logger: (m) => {
-                    if (m.status === 'recognizing text') {
-                        console.log(`[Tesseract] Progress: ${(m.progress * 100).toFixed(0)}%`);
-                    } else {
-                        console.log(`[Tesseract] ${m.status}`);
-                    }
-                }
-            }
-        );
-
-        console.log('[Auto OCR] ✅ OCR complete:', {
-            textLength: result.data.text.length,
-            confidence: result.data.confidence
+        const ocrResult = await performAutomaticOCR(buffer);
+        console.log('[PDF Extractor] ✅ OCR successful:', {
+            textLength: ocrResult.text.length,
+            confidence: ocrResult.confidence
         });
+        return ocrResult.text;
+    } catch (ocrError: any) {
+        console.error('[PDF Extractor] OCR failed:', ocrError);
 
-        // Cleanup
-        await unlink(tempPdfPath).catch(() => { });
-
-        const cleanedText = cleanOCRText(result.data.text);
-
-        return {
-            text: cleanedText,
-            confidence: result.data.confidence,
-            method: 'ocr',
-            pageCount: 1 // MVP: single page
-        };
-
-    } catch (error: any) {
-        console.error('[Auto OCR] Error:', error);
-
-        // Cleanup on error
-        await unlink(tempPdfPath).catch(() => { });
-
-        throw new Error(`OCR failed: ${error.message}`);
+        // OCR failed - guide user to manual options
+        throw new Error(
+            'PDF_SCANNED|' +
+            'Ce PDF est scanné et l\'OCR automatique a échoué. ' +
+            'Erreur: ' + ocrError.message + '. ' +
+            'Veuillez utiliser l\'onglet "Scan Caméra" ou copier le texte manuellement.'
+        );
     }
 }
 
 /**
- * Clean OCR text output
+ * Try native text extraction from PDF
+ * Handles DOMMatrix error gracefully (Node.js environment)
  */
-function cleanOCRText(text: string): string {
-    let cleaned = text;
+async function tryNativeExtraction(buffer: Buffer) {
+    try {
+        // pdf-parse doesn't work in Node.js API routes due to DOMMatrix
+        // Skip it and go straight to OCR for scanned PDFs
+        console.log('[PDF Extractor] Skipping pdf-parse (DOMMatrix not available in Node.js)');
 
-    // Remove common OCR artifacts
-    cleaned = cleaned.replace(/[|]/g, 'l');
-    cleaned = cleaned.replace(/[\\]/g, '/');
-
-    // Normalize whitespace
-    cleaned = cleaned.replace(/[ \t]+/g, ' ');
-    cleaned = cleaned.replace(/\n\s*\n\s*\n+/g, '\n\n');
-
-    // Remove page numbers
-    cleaned = cleaned.replace(/^Page\s+\d+.*$/gm, '');
-    cleaned = cleaned.replace(/^\d+\s*$/gm, '');
-
-    return cleaned.trim();
-}
-
-export function isOCRAvailable(): boolean {
-    return true;
+        return {
+            text: '',
+            isScanned: true,
+            pageCount: 0
+        };
+    } catch (error) {
+        console.error('[PDF Extractor] Native extraction failed:', error);
+        return {
+            text: '',
+            isScanned: true,
+            pageCount: 0
+        };
+    }
 }
