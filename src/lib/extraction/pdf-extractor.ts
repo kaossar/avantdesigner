@@ -9,14 +9,7 @@
  * NO ERRORS shown to user - everything is automatic
  */
 
-import { performAutomaticOCR, isOCRAvailable } from '../ocr/automatic-ocr';
-
-interface PDFProcessingResult {
-    text: string;
-    method: 'native' | 'ocr' | 'fallback';
-    isScanned: boolean;
-    pageCount: number;
-}
+import { performAutomaticOCR } from '../ocr/automatic-ocr';
 
 const TEXT_THRESHOLD = 50;
 
@@ -39,34 +32,27 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
         return nativeResult.text.trim();
     }
 
-    // Step 3: PDF is scanned - Try automatic OCR
-    console.log('[PDF Extractor] ⚠️ Scanned PDF detected - attempting automatic OCR...');
+    // Step 3: PDF is scanned - Automatic OCR (ALWAYS RUNS)
+    console.log('[PDF Extractor] ⚠️ Scanned PDF detected - starting automatic OCR...');
 
-    if (isOCRAvailable()) {
-        try {
-            const ocrResult = await performAutomaticOCR(buffer);
-            console.log('[PDF Extractor] ✅ OCR successful:', {
-                textLength: ocrResult.text.length,
-                confidence: ocrResult.confidence
-            });
-            return ocrResult.text;
-        } catch (ocrError) {
-            console.error('[PDF Extractor] OCR failed:', ocrError);
-            // Fall through to manual options
-        }
+    try {
+        const ocrResult = await performAutomaticOCR(buffer);
+        console.log('[PDF Extractor] ✅ OCR successful:', {
+            textLength: ocrResult.text.length,
+            confidence: ocrResult.confidence
+        });
+        return ocrResult.text;
+    } catch (ocrError: any) {
+        console.error('[PDF Extractor] OCR failed:', ocrError);
+
+        // OCR failed - guide user to manual options
+        throw new Error(
+            'PDF_SCANNED|' +
+            'Ce PDF est scanné et l\'OCR automatique a échoué. ' +
+            'Erreur: ' + ocrError.message + '. ' +
+            'Veuillez utiliser l\'onglet "Scan Caméra" ou copier le texte manuellement.'
+        );
     }
-
-    // Step 4: OCR not available or failed - Guide user to manual options
-    // This is a temporary fallback until server OCR is fully implemented
-    console.log('[PDF Extractor] OCR not available - guiding to manual options');
-
-    throw new Error(
-        'PDF_SCANNED|' +
-        'Ce PDF est scanné. Pour une analyse optimale, veuillez : ' +
-        '1) Utiliser l\'onglet "Scan Caméra" pour l\'OCR, ' +
-        '2) Copier le texte manuellement dans "Coller Texte", ' +
-        'ou 3) Convertir en DOCX.'
-    );
 }
 
 /**
