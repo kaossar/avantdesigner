@@ -326,6 +326,81 @@ npm install @huggingface/inference
 npm install @mistralai/mistralai
 ```
 
+## 🧪 Stratégie de Tests
+
+### Principe : Tests après chaque Sprint
+
+**Règle d'or** : Chaque sprint doit inclure ses tests unitaires et d'intégration.
+
+### Structure des Tests
+
+#### Python (Backend IA)
+```
+python-ai/
+├── tests/
+│   ├── __init__.py
+│   ├── test_validator.py     # Tests validation fichiers
+│   ├── test_cleaner.py       # Tests nettoyage texte
+│   ├── test_chunker.py       # Tests chunking
+│   └── test_pipeline.py      # Tests intégration
+├── pytest.ini                # Configuration pytest
+├── requirements-test.txt     # Dépendances tests
+└── TESTING.md               # Documentation tests
+```
+
+#### Commandes
+```bash
+# Installer dépendances tests
+pip install -r requirements-test.txt
+
+# Lancer tous les tests
+pytest
+
+# Tests avec couverture
+pytest --cov=. --cov-report=html
+
+# Tests verbeux
+pytest -v
+
+# Tests spécifiques
+pytest tests/test_validator.py
+```
+
+#### Couverture Cible
+- **Minimum** : 70% de couverture
+- **Objectif** : 85% de couverture
+- **Critique** : 100% pour utils et preprocessing
+
+### Tests par Sprint
+
+#### Sprint 1 (Infrastructure IA)
+- ✅ Tests pipeline de base
+- ✅ Tests API endpoints (FastAPI)
+
+#### Sprint 2 (Pipeline Professionnel)
+- ✅ Tests validator (8 tests)
+- ✅ Tests cleaner (9 tests)
+- ✅ Tests chunker (11 tests)
+- ✅ Tests intégration pipeline (6 tests)
+
+#### Sprint 3+ (À venir)
+- [ ] Tests NER (entity extraction)
+- [ ] Tests LLM integration
+- [ ] Tests RAG juridique
+- [ ] Tests export PDF
+
+### Next.js (Frontend)
+```bash
+# Tests unitaires
+npm run test
+
+# Tests en mode watch
+npm run test:watch
+
+# Tests E2E
+npm run test:e2e
+```
+
 ## 🏗️ Architecture des Composants
 
 ```
