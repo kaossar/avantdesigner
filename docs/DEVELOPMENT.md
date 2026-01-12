@@ -77,31 +77,49 @@ npm start
 
 **Architecture** : Pipeline IA complet (OCR → Nettoyage → Chunking → Analyse Multi-Modèles → RAG → Export)
 
-##### 7.1 Infrastructure IA (Sprint 1 - 3-4 jours)
-- [ ] Service Python FastAPI (`python-ai/main.py`)
-  - [ ] API `/analyze` avec CORS pour Next.js
-  - [ ] Health check endpoint
-  - [ ] Gestion des erreurs
-- [ ] Pipeline IA complet (`python-ai/pipeline.py`)
-  - [ ] Nettoyage intelligent du texte (spaCy)
-  - [ ] Chunking par clause (LangChain)
-  - [ ] Classification type de contrat (CamemBERT)
-  - [ ] NER juridique (extraction montants, dates, parties)
-  - [ ] Analyse clause par clause (Mistral 7B)
-  - [ ] Score de risque multi-axes
-  - [ ] Génération recommandations
-- [ ] Configuration modèles Hugging Face
-  - [ ] Mistral-7B-Instruct-v0.2 (LLM principal)
-  - [ ] CamemBERT (classification + NER)
-  - [ ] BARThez (résumé)
-  - [ ] Sentence-Transformers (RAG)
-- [ ] Fichier `requirements.txt` complet
-  - [ ] fastapi, uvicorn
-  - [ ] transformers, torch, accelerate
-  - [ ] langchain, sentence-transformers
-  - [ ] spacy, faiss-cpu
+##### 7.1 Infrastructure IA (Sprint 1 - 3-4 jours) ✅
+- [x] Service Python FastAPI (`python-ai/main.py`)
+  - [x] API `/analyze` avec CORS pour Next.js
+  - [x] Health check endpoint
+  - [x] Gestion des erreurs
+- [x] Pipeline IA complet (`python-ai/pipeline.py`)
+  - [x] Nettoyage intelligent du texte (règles MVP)
+  - [x] Chunking par clause (regex + paragraphes)
+  - [x] Classification type de contrat (règles)
+  - [x] NER juridique (extraction montants, dates, parties)
+  - [x] Analyse clause par clause (règles MVP)
+  - [x] Score de risque multi-axes
+  - [x] Génération recommandations
+- [x] Configuration modèles Hugging Face (version légère)
+  - [ ] Mistral-7B-Instruct-v0.2 (LLM principal) - Sprint 3
+  - [ ] CamemBERT (classification + NER) - Sprint 3
+  - [ ] BARThez (résumé) - Sprint 3
+  - [ ] Sentence-Transformers (RAG) - Sprint 3
+- [x] Fichier `requirements.txt` complet
+  - [x] fastapi, uvicorn
+  - [x] pdfplumber (Sprint 2)
+  - [ ] transformers, torch, accelerate - Sprint 3
+  - [ ] langchain, sentence-transformers - Sprint 3
+  - [ ] spacy, faiss-cpu - Sprint 3
 
-##### 7.2 RAG Juridique (Sprint 2 - 2 jours)
+##### 7.2 Pipeline Professionnel (Sprint 2 - Terminé ✅)
+- [x] Validation fichiers (`utils/validator.py`)
+  - [x] Vérification taille (50MB max)
+  - [x] Vérification MIME type
+  - [x] Extensions autorisées
+- [x] Nettoyage professionnel (`preprocessing/cleaner.py`)
+  - [x] Suppression headers/footers répétitifs
+  - [x] Normalisation espaces et sauts de ligne
+  - [x] Suppression numéros de page
+  - [x] Métadonnées de nettoyage
+- [x] Chunking intelligent (`preprocessing/chunker.py`)
+  - [x] Détection articles/clauses
+  - [x] Contexte ajouté à chaque chunk
+  - [x] Détection type de clause (financial, termination, etc.)
+  - [x] Limite 1000 caractères par chunk
+- [x] Pipeline mis à jour avec composants professionnels
+
+##### 7.3 RAG Juridique (Sprint 3 - À faire)
 - [ ] Base de connaissances locale (`python-ai/rag_setup.py`)
   - [ ] Code Civil (articles pertinents)
   - [ ] Loi 89-462 (baux d'habitation)
