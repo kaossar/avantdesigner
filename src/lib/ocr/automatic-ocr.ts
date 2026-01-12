@@ -1,8 +1,7 @@
 /**
  * Automatic OCR Service for Scanned PDFs
  * 
- * Server-side OCR using Tesseract.js in Node.js environment
- * Configured for Next.js API routes
+ * Server-side OCR using Tesseract.js with explicit worker configuration
  */
 
 import { createWorker } from 'tesseract.js';
@@ -19,7 +18,7 @@ interface OCRResult {
 
 /**
  * Perform automatic OCR on a scanned PDF
- * Uses Tesseract.js worker for Node.js
+ * Configured worker path for Next.js
  */
 export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult> {
     console.log('[Auto OCR] Starting automatic OCR for scanned PDF...');
@@ -35,9 +34,20 @@ export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult>
         await writeFile(tempPdfPath, pdfBuffer);
         console.log('[Auto OCR] PDF saved to:', tempPdfPath);
 
-        // Create Tesseract worker for Node.js
-        console.log('[Auto OCR] Creating Tesseract worker...');
+        // Create Tesseract worker with explicit paths for Next.js
+        console.log('[Auto OCR] Creating Tesseract worker with custom config...');
+
+        // Get the correct node_modules path
+        const nodeModulesPath = path.join(process.cwd(), 'node_modules');
+        const workerPath = path.join(nodeModulesPath, 'tesseract.js', 'src', 'worker-script', 'node', 'index.js');
+        const langPath = path.join(nodeModulesPath, 'tesseract.js-languages', 'fra.traineddata.gz');
+
+        console.log('[Auto OCR] Worker path:', workerPath);
+        console.log('[Auto OCR] Lang path:', langPath);
+
         worker = await createWorker('fra', 1, {
+            workerPath: workerPath,
+            langPath: langPath,
             logger: (m) => {
                 if (m.status === 'recognizing text') {
                     console.log(`[Tesseract] Progress: ${(m.progress * 100).toFixed(0)}%`);
@@ -71,7 +81,7 @@ export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult>
             text: cleanedText,
             confidence: data.confidence,
             method: 'ocr',
-            pageCount: 1 // MVP: single page
+            pageCount: 1
         };
 
     } catch (error: any) {
@@ -87,24 +97,14 @@ export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult>
     }
 }
 
-/**
- * Clean OCR text output
- */
 function cleanOCRText(text: string): string {
     let cleaned = text;
-
-    // Remove common OCR artifacts
     cleaned = cleaned.replace(/[|]/g, 'l');
     cleaned = cleaned.replace(/[\\]/g, '/');
-
-    // Normalize whitespace
     cleaned = cleaned.replace(/[ \t]+/g, ' ');
     cleaned = cleaned.replace(/\n\s*\n\s*\n+/g, '\n\n');
-
-    // Remove page numbers
     cleaned = cleaned.replace(/^Page\s+\d+.*$/gm, '');
     cleaned = cleaned.replace(/^\d+\s*$/gm, '');
-
     return cleaned.trim();
 }
 
