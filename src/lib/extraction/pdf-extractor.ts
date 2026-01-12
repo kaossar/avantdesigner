@@ -1,11 +1,16 @@
+/**
+ * PDF Text Extractor using pdf-parse
+ * Handles native text extraction from PDF files
+ */
+
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
     console.log('[PDF Extractor] Starting pdf-parse extraction...');
 
     try {
-        // pdf-parse v1.1.1 usage: just call the module as a function
-        const pdfParse = require('pdf-parse');
+        // Dynamic import to handle ESM/CJS compatibility
+        const pdfParse = await import('pdf-parse').then(m => m.default || m);
 
-        // Call it directly - it's the default export
+        // Call pdf-parse with the buffer
         const data = await pdfParse(buffer);
 
         console.log('[PDF Extractor] Extraction complete:', {
