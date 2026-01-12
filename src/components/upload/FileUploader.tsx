@@ -28,6 +28,7 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
         accept: {
             'application/pdf': ['.pdf'],
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'text/plain': ['.txt'],
             'image/jpeg': ['.jpg', '.jpeg'],
             'image/png': ['.png']
         },
@@ -82,7 +83,7 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
                 </h3>
 
                 <p className="text-slate-500 text-sm mb-6 max-w-sm">
-                    Supporte PDF, Word, Images (Scan/Photo).
+                    Supporte PDF, Word, TXT, Images (Scan/Photo).
                     <br />
                     Taille maximale : 10 Mo.
                 </p>
@@ -95,6 +96,7 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
                 <div className="absolute bottom-4 right-4 flex gap-2 opacity-50">
                     <span className="text-[10px] font-bold uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded">PDF</span>
                     <span className="text-[10px] font-bold uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded">DOCX</span>
+                    <span className="text-[10px] font-bold uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded">TXT</span>
                     <span className="text-[10px] font-bold uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded">JPG</span>
                 </div>
             </div>

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { extractTextFromPdf } from '@/lib/extraction/pdf-extractor';
-import { extractTextFromDocx } from '@/lib/extraction/docx-extractor';
+import { extractTextFromDocument } from '@/lib/extraction/universal-extractor';
 import { CreditManager } from '@/lib/credits/credit-manager';
 
 export async function POST(req: NextRequest) {
@@ -8,7 +7,6 @@ export async function POST(req: NextRequest) {
         console.log('[API] Analyze Request Received');
 
         // 1. Verify Credits (Mock)
-        // In a real app, we would get the userId from the session
         const userId = 'mock-user-id';
         const hasCredits = await CreditManager.hasCredits(userId);
 
@@ -20,10 +18,19 @@ export async function POST(req: NextRequest) {
         }
 
         // 2. Parse Form Data
-        const formData = await req.formData();
+        console.log('[API Debug] Parsing FormData...');
+        let formData;
+        try {
+            formData = await req.formData();
+        } catch (e) {
+            console.error('[API Debug] FormData Parsing Failed:', e);
+            return NextResponse.json({ error: 'Invalid Form Data' }, { status: 400 });
+        }
+
         const file = formData.get('file') as File | null;
 
         if (!file) {
+            console.log('[API Debug] No file found');
             return NextResponse.json(
                 { error: 'No file provided' },
                 { status: 400 }
@@ -32,35 +39,38 @@ export async function POST(req: NextRequest) {
 
         console.log(`[API] Processing file: ${file.name} (${file.type})`);
 
-        // 3. Extract Text based on mime type
+        // 3. Extract Text using Universal Extractor
+        console.log('[API Debug] Extracting text with universal extractor...');
         const buffer = Buffer.from(await file.arrayBuffer());
         let text = '';
 
         try {
-            if (file.type === 'application/pdf') {
-                text = await extractTextFromPdf(buffer);
-            } else if (
-                file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-                file.name.endsWith('.docx')
-            ) {
-                text = await extractTextFromDocx(buffer);
-            } else {
-                return NextResponse.json(
-                    { error: 'Unsupported file type. Please upload PDF or DOCX.' },
-                    { status: 400 }
-                );
+            // Handle text files directly
+            if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                text = buffer.toString('utf-8');
+                console.log('[API Debug] Text file processed directly');
             }
-        } catch (extractionError) {
-            console.error('[API] Extraction failed:', extractionError);
+            // Use universal extractor for all other formats (PDF, DOCX, etc.)
+            // Note: OCR is only available for images via client-side Tesseract
+            else {
+                text = await extractTextFromDocument(buffer, file.name);
+            }
+        } catch (extractionError: any) {
+            console.error('[API Debug] Extraction failed:', extractionError);
             return NextResponse.json(
-                { error: 'Failed to extract text from document.' },
+                {
+                    error: extractionError.message || 'Failed to extract text from document.',
+                    details: process.env.NODE_ENV === 'development' ? extractionError.stack : undefined
+                },
                 { status: 500 }
             );
         }
 
+        console.log('[API Debug] Text extracted, length:', text.length);
+
         if (!text || text.trim().length === 0) {
             return NextResponse.json(
-                { error: 'No text extracted. The document might be an image-only PDF.' },
+                { error: 'No text extracted.' },
                 { status: 422 }
             );
         }
@@ -69,34 +79,40 @@ export async function POST(req: NextRequest) {
         await CreditManager.deductCredit(userId);
 
         // 5. Analyze Logic
-        // TODO: Get contract type from FormData (frontend needs to send it)
-        // For now, default to 'housing' to test the rules we just wrote
         const contractType = 'housing';
 
+        console.log('[API Debug] Loading AnalysisEngine...');
         const { AnalysisEngine } = require('@/lib/analysis/engine');
 
-        // Define if AI should be enabled (check env or query param)
         const enableAi = !!process.env.HUGGINGFACE_API_KEY;
+        console.log('[API Debug] Enable AI:', enableAi);
 
+        console.log('[API Debug] Starting Analysis...');
         const report = await AnalysisEngine.analyze(text, {
             contractType,
             enableAi
         });
+        console.log('[API Debug] Analysis Complete');
 
         // 6. Return Result
         return NextResponse.json({
             success: true,
-            data: report, // The full structured report
-            text: text, // Keep returning text for debug/preview
+            data: report,
+            text: text,
             creditsRemaining: 99,
             message: 'Analysis successful'
         });
 
-    } catch (error) {
-        console.error('[API] Internal Error:', error);
+    } catch (error: any) {
+        console.error('[API] Internal Error Stack:', error);
+
+        // Handle Validation Errors (e.g. "Le document ne semble pas être un contrat")
+        const errorMessage = error instanceof Error ? error.message : 'Une erreur inconnue est survenue';
+
+        // If it's a known validation error, return 400 with the message
         return NextResponse.json(
-            { error: 'Internal Server Error' },
-            { status: 500 }
+            { error: errorMessage },
+            { status: 400 }
         );
     }
 }

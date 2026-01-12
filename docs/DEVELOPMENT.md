@@ -71,15 +71,153 @@ npm start
     - Fallback automatique sur les règles si l'IA échoue
 - ✅ Système de Scoring (Trusted Score)
 
-#### Phase 7 : Interface Résultats (Prochaine Étape)
-- [ ] Page de résultats visuelle
-- [ ] Jauges de risque
-- [ ] Affichage des "Attention Points"
-- [ ] Page résultats avec score
-- [ ] Liste des clauses
-- [ ] Détails par clause
-- [ ] Reformulations suggérées
-- [ ] Export PDF
+#### Phase 7 : Version Expert IA-First (En Cours 🔥)
+
+**Objectif** : Transformer "Analyser mon contrat" en outil expert avec IA au cœur du produit
+
+**Architecture** : Pipeline IA complet (OCR → Nettoyage → Chunking → Analyse Multi-Modèles → RAG → Export)
+
+##### 7.1 Infrastructure IA (Sprint 1 - 3-4 jours)
+- [ ] Service Python FastAPI (`python-ai/main.py`)
+  - [ ] API `/analyze` avec CORS pour Next.js
+  - [ ] Health check endpoint
+  - [ ] Gestion des erreurs
+- [ ] Pipeline IA complet (`python-ai/pipeline.py`)
+  - [ ] Nettoyage intelligent du texte (spaCy)
+  - [ ] Chunking par clause (LangChain)
+  - [ ] Classification type de contrat (CamemBERT)
+  - [ ] NER juridique (extraction montants, dates, parties)
+  - [ ] Analyse clause par clause (Mistral 7B)
+  - [ ] Score de risque multi-axes
+  - [ ] Génération recommandations
+- [ ] Configuration modèles Hugging Face
+  - [ ] Mistral-7B-Instruct-v0.2 (LLM principal)
+  - [ ] CamemBERT (classification + NER)
+  - [ ] BARThez (résumé)
+  - [ ] Sentence-Transformers (RAG)
+- [ ] Fichier `requirements.txt` complet
+  - [ ] fastapi, uvicorn
+  - [ ] transformers, torch, accelerate
+  - [ ] langchain, sentence-transformers
+  - [ ] spacy, faiss-cpu
+
+##### 7.2 RAG Juridique (Sprint 2 - 2 jours)
+- [ ] Base de connaissances locale (`python-ai/rag_setup.py`)
+  - [ ] Code Civil (articles pertinents)
+  - [ ] Loi 89-462 (baux d'habitation)
+  - [ ] Code du Travail (articles clés)
+  - [ ] Modèles de clauses neutres
+- [ ] Index vectoriel FAISS
+  - [ ] Embeddings multilingues
+  - [ ] Recherche sémantique
+  - [ ] Top-K retrieval
+- [ ] Intégration RAG dans pipeline
+  - [ ] Enrichissement des analyses
+  - [ ] Références légales automatiques
+  - [ ] Prévention hallucinations
+
+##### 7.3 Intégration Next.js (Sprint 2 - 1 jour)
+- [ ] Route API `/api/ai-analyze` (`src/app/api/ai-analyze/route.ts`)
+  - [ ] Communication avec service Python
+  - [ ] Gestion timeout
+  - [ ] Fallback en cas d'erreur
+- [ ] Variables d'environnement
+  - [ ] `AI_SERVICE_URL` (http://localhost:8000 ou Docker)
+- [ ] Tests d'intégration
+  - [ ] Upload → Analyse → Résultat
+  - [ ] Gestion erreurs réseau
+
+##### 7.4 Interface Résultats Expert (Sprint 3 - 3 jours)
+- [ ] Composant `ClauseByClauseView` (`src/components/analysis/ClauseByClauseView.tsx`)
+  - [ ] Affichage clause par clause
+  - [ ] Code couleur par niveau de risque (🟢🟡🔴)
+  - [ ] Sections : Résumé, Implications, Risques, Conformité, Recommandation
+  - [ ] Animations Framer Motion
+- [ ] Composant `ScoreCard` (`src/components/analysis/ScoreCard.tsx`)
+  - [ ] Score global avec jauge
+  - [ ] Scores détaillés (conformité, équilibre, clarté)
+  - [ ] Visualisation graphique
+- [ ] Composant `RiskSummary` (`src/components/analysis/RiskSummary.tsx`)
+  - [ ] Liste des risques détectés
+  - [ ] Filtrage par gravité
+  - [ ] Actions recommandées
+- [ ] Composant `ContractSummary` (`src/components/analysis/ContractSummary.tsx`)
+  - [ ] Résumé exécutif IA
+  - [ ] Entités extraites (montants, dates, parties)
+  - [ ] Type de contrat détecté
+- [ ] Page résultats (`src/app/analyser/results/page.tsx`)
+  - [ ] Layout responsive
+  - [ ] Navigation entre sections
+  - [ ] Export PDF
+
+##### 7.5 Export PDF Expert (Sprint 3 - 1 jour)
+- [ ] Service d'export (`src/lib/export/pdf-expert.ts`)
+  - [ ] Génération PDF avec `pdfkit`
+  - [ ] Sections : Score, Résumé, Clauses, Risques, Recommandations
+  - [ ] Mise en page professionnelle
+  - [ ] Références légales
+- [ ] Route API `/api/export-pdf`
+  - [ ] Génération à la demande
+  - [ ] Téléchargement direct
+- [ ] Bouton d'export dans l'interface
+  - [ ] Loading state
+  - [ ] Gestion erreurs
+
+##### 7.6 Docker & Déploiement (Sprint 4 - 2 jours)
+- [ ] Dockerfile Python (`python-ai/Dockerfile`)
+  - [ ] Base image Python 3.11
+  - [ ] Installation dépendances système
+  - [ ] Téléchargement modèles au build
+  - [ ] Configuration GPU (optionnel)
+- [ ] Docker Compose (`docker-compose.yml`)
+  - [ ] Service Next.js (web)
+  - [ ] Service Python (ai-service)
+  - [ ] Volume pour cache modèles
+  - [ ] Network configuration
+- [ ] Scripts de déploiement
+  - [ ] `docker-compose up -d`
+  - [ ] Health checks
+  - [ ] Logs monitoring
+- [ ] Documentation déploiement
+  - [ ] Prérequis système (RAM, GPU)
+  - [ ] Variables d'environnement
+  - [ ] Troubleshooting
+
+##### 7.7 Tests & Validation (Sprint 4 - 1 jour)
+- [ ] Tests unitaires Python
+  - [ ] Pipeline IA
+  - [ ] Chunking
+  - [ ] Parsing réponses LLM
+- [ ] Tests d'intégration
+  - [ ] End-to-end (upload → analyse → résultat)
+  - [ ] Performance (temps de réponse)
+  - [ ] Qualité des analyses
+- [ ] Tests UI
+  - [ ] Affichage clauses
+  - [ ] Interactions utilisateur
+  - [ ] Responsive design
+
+##### 7.8 Optimisations (Optionnel)
+- [ ] Cache des modèles
+  - [ ] Éviter rechargement à chaque requête
+  - [ ] Singleton pattern
+- [ ] Batch processing
+  - [ ] Analyser plusieurs clauses en parallèle
+- [ ] Monitoring
+  - [ ] Logs structurés
+  - [ ] Métriques (temps, erreurs)
+  - [ ] Alertes
+
+**Roadmap Totale** : 10-11 jours pour Version Expert IA-First complète
+
+**Stack Technique** :
+- Backend IA : Python 3.11, FastAPI, Uvicorn
+- LLM : Mistral-7B-Instruct-v0.2 (Hugging Face)
+- NLP : spaCy (fr_core_news_md), CamemBERT, BARThez
+- RAG : FAISS, sentence-transformers
+- Chunking : LangChain
+- Export : pdfkit
+- Déploiement : Docker, Docker Compose
 
 #### Phase 8 : Paiement Stripe
 - [ ] Intégration Stripe Checkout
