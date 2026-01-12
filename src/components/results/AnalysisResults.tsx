@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
-import { AnalysisReport } from '@/lib/analysis/types';
-import { ScoreGauge } from './ScoreGauge';
-import { RiskCard } from './RiskCard';
+'use client';
+
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Share2, Download, Loader2 } from 'lucide-react';
-import { generatePdf } from '@/lib/pdf/generator';
+import { ScoreCard } from '@/components/analysis/ScoreCard';
+import { ContractSummary } from '@/components/analysis/ContractSummary';
+import { RiskSummary } from '@/components/analysis/RiskSummary';
+import { ClauseByClauseView } from '@/components/analysis/ClauseByClauseView';
+import { AnalysisReport } from '@/lib/analysis/types';
+import { ArrowLeft, Download, Share2 } from 'lucide-react';
 
 interface AnalysisResultsProps {
     report: AnalysisReport;
@@ -12,132 +14,135 @@ interface AnalysisResultsProps {
 }
 
 export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
-    const riskCount = report.risks.length;
-    const [isExporting, setIsExporting] = useState(false);
-
-    // Sort risks: Critical first, then High, etc.
-    const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-    const sortedRisks = [...report.risks].sort((a, b) =>
-        (severityOrder[a.severity] ?? 4) - (severityOrder[b.severity] ?? 4)
-    );
-
-    const handleDownloadPdf = async () => {
-        setIsExporting(true);
-        try {
-            await generatePdf('analysis-report-content', `Rapport-AvantDeSigner-${report.contractType}.pdf`);
-        } catch (error) {
-            console.error("Export failed", error);
-            alert("Erreur lors de la génération du PDF.");
-        } finally {
-            setIsExporting(false);
+    // Transform report data to match expert component interfaces
+    const score = {
+        global: report.score?.total || report.score || 0,
+        conformity: report.score?.conformity || 85,
+        balance: report.score?.balance || 80,
+        clarity: report.score?.clarity || 75,
+        details: {
+            total_clauses: report.clauses?.length || 0,
+            high_risks: report.risks?.filter(r => r.severity === 'high').length || 0,
+            medium_risks: report.risks?.filter(r => r.severity === 'medium').length || 0,
+            low_risks: report.clauses?.filter(c => c.risk_level === 'low').length || 0,
         }
     };
 
+    const contractType = report.contractType || 'Contrat';
+    const summary = report.summary || 'Analyse terminée avec succès.';
+    const entities = report.entities || { montants: [], dates: [], durees: [] };
+    const metadata = {
+        total_clauses: report.clauses?.length || 0,
+        analyzed_clauses: report.clauses?.length || 0,
+        cleaning_stats: report.metadata?.cleaning_stats
+    };
+
+    const handleExportPdf = () => {
+        // TODO: Implement PDF export
+        alert('Export PDF - Fonctionnalité à venir');
+    };
+
+    const handleShare = () => {
+        // TODO: Implement share functionality
+        alert('Partage - Fonctionnalité à venir');
+    };
+
     return (
-        <div id="analysis-report-content" className="w-full max-w-4xl mx-auto space-y-8 animate-fadeIn p-4 md:p-8 bg-white md:bg-transparent">
-
-            {/* Top Bar with consistent Buttons */}
-            <div className="flex items-center justify-between mb-6 print:hidden">
-                <Button
-                    variant="ghost"
-                    onClick={onReset}
-                    className="text-slate-500 hover:text-slate-900"
-                >
-                    <ArrowLeft size={16} className="mr-2" />
-                    Nouvelle analyse
-                </Button>
-                <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="hidden sm:flex">
-                        <Share2 size={16} className="mr-2" /> Partager
+        <div className="w-full space-y-8 animate-fadeIn">
+            {/* Header with Actions */}
+            <div className="flex items-center justify-between print:hidden">
+                <div>
+                    <h1 className="text-3xl font-bold text-primary-900">
+                        Analyse Expert IA
+                    </h1>
+                    <p className="text-slate-600 mt-1">
+                        Résultats détaillés de l'analyse de votre contrat
+                    </p>
+                </div>
+                <div className="flex gap-3">
+                    <Button variant="ghost" onClick={onReset}>
+                        <ArrowLeft size={16} className="mr-2" />
+                        Nouvelle analyse
                     </Button>
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={handleDownloadPdf}
-                        disabled={isExporting}
-                    >
-                        {isExporting ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Download size={16} className="mr-2" />}
-                        {isExporting ? 'Génération...' : 'PDF'}
+                    <Button variant="secondary" onClick={handleShare} className="hidden sm:flex">
+                        <Share2 size={16} className="mr-2" />
+                        Partager
+                    </Button>
+                    <Button variant="secondary" onClick={handleExportPdf}>
+                        <Download size={16} className="mr-2" />
+                        PDF
                     </Button>
                 </div>
             </div>
 
-            {/* Score & Summary Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            {/* Score Card */}
+            <ScoreCard score={score} />
 
-                {/* Left: Gauge */}
-                <div className="col-span-1 border-r border-slate-100 flex justify-center">
-                    <ScoreGauge score={report.score.total} />
-                </div>
+            {/* Contract Summary */}
+            <ContractSummary
+                contractType={contractType}
+                summary={summary}
+                entities={entities}
+                metadata={metadata}
+            />
 
-                {/* Right: Summary Text - Simplified */}
-                <div className="col-span-2 space-y-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                            Résultats de l'analyse
-                        </h2>
-                        {/* Removed redundant text about detected risks, as it's shown below */}
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm text-slate-500">Confiance IA :</span>
-                            <div className="h-2 flex-1 bg-slate-100 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-blue-600 rounded-full"
-                                    style={{ width: `${report.score.total}%` }}
-                                />
-                            </div>
-                            <span className="font-bold text-slate-900">{report.score.total}/100</span>
-                        </div>
-                    </div>
+            {/* Risk Summary */}
+            {report.risks && report.risks.length > 0 && (
+                <RiskSummary risks={report.risks} />
+            )}
 
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <div className="text-slate-500 text-xs font-semibold uppercase">Contrat</div>
-                            <div className="text-slate-900 font-medium capitalize mt-1">
-                                {report.contractType === 'housing' ? 'Bail d\'habitation' : report.contractType}
-                            </div>
-                        </div>
-                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <div className="text-slate-500 text-xs font-semibold uppercase">Risques</div>
-                            <div className="text-slate-900 font-medium mt-1">
-                                {riskCount > 0 ? `${riskCount} détecté${riskCount > 1 ? 's' : ''}` : 'Aucun'}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/* Clause by Clause Analysis */}
+            {report.clauses && report.clauses.length > 0 && (
+                <ClauseByClauseView clauses={report.clauses} />
+            )}
 
-            {/* Risk List */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    Détails des points de vigilance
-                </h3>
-
-                {sortedRisks.length > 0 ? (
+            {/* Recommendations */}
+            {report.recommendations && report.recommendations.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+                    <h2 className="text-2xl font-bold text-primary-900 mb-6">
+                        Recommandations IA
+                    </h2>
                     <div className="space-y-4">
-                        {sortedRisks.map((risk) => (
-                            <RiskCard key={risk.id} risk={risk} />
+                        {report.recommendations.map((rec, index) => (
+                            <div
+                                key={index}
+                                className={`border-l-4 rounded-lg p-4 ${rec.priority === 'urgent' ? 'border-red-500 bg-red-50' :
+                                        rec.priority === 'important' ? 'border-amber-500 bg-amber-50' :
+                                            'border-blue-500 bg-blue-50'
+                                    }`}
+                            >
+                                <p className="font-bold text-sm mb-1">
+                                    {rec.priority === 'urgent' ? '🔴 Urgent' :
+                                        rec.priority === 'important' ? '🟡 Important' :
+                                            '🔵 Information'}
+                                </p>
+                                <p className="font-semibold text-slate-900">{rec.action}</p>
+                                <p className="text-sm text-slate-700 mt-1">{rec.detail}</p>
+                            </div>
                         ))}
                     </div>
-                ) : (
-                    <div className="p-12 text-center bg-green-50 rounded-xl border border-green-100">
-                        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600 text-2xl">
-                            🎉
-                        </div>
-                        <h3 className="text-lg font-bold text-green-900 mb-2">Tout semble correct</h3>
-                        <p className="text-green-700">
-                            Aucun risque majeur n'a été détecté par nos algorithmes.
-                        </p>
-                    </div>
-                )}
-            </div>
+                </div>
+            )}
 
+            {/* Legal Disclaimer */}
             <div className="p-6 bg-blue-50 border border-blue-100 rounded-xl text-center">
-                <h4 className="text-blue-900 font-bold mb-2">Question juridique ?</h4>
+                <h4 className="text-blue-900 font-bold mb-2">⚖️ Avertissement juridique</h4>
                 <p className="text-blue-700 text-sm mb-4">
-                    Cette analyse automatique ne remplace pas l'avis d'un professionnel.
+                    Cette analyse automatique par IA ne remplace pas l'avis d'un professionnel du droit.
+                    Pour toute question juridique, consultez un avocat.
                 </p>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
-                    Parler à un expert
+                    Parler à un expert juridique
+                </Button>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex gap-4 justify-center pt-8 print:hidden">
+                <Button size="lg" onClick={onReset}>
+                    Analyser un autre contrat
+                </Button>
+                <Button size="lg" variant="outline" onClick={handleExportPdf}>
+                    📄 Exporter en PDF
                 </Button>
             </div>
         </div>
