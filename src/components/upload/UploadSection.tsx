@@ -12,6 +12,8 @@ export function UploadSection() {
     const [activeTab, setActiveTab] = useState<'upload' | 'text' | 'camera'>('upload');
     const [step, setStep] = useState<'input' | 'preview' | 'results'>('input');
     const [isProcessing, setIsProcessing] = useState(false);
+    const [processingStatus, setProcessingStatus] = useState<string>('');
+    const [processingProgress, setProcessingProgress] = useState<number>(0);
 
     // Data State
     const [file, setFile] = useState<File | null>(null);
