@@ -1,7 +1,8 @@
 /**
  * Automatic OCR Service for Scanned PDFs
  * 
- * Server-side OCR using Tesseract.js with explicit worker configuration
+ * Simplified approach - uses Tesseract.js default configuration
+ * Works in Next.js API routes
  */
 
 import { createWorker } from 'tesseract.js';
@@ -18,7 +19,7 @@ interface OCRResult {
 
 /**
  * Perform automatic OCR on a scanned PDF
- * Configured worker path for Next.js
+ * Simplified - uses Tesseract defaults
  */
 export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult> {
     console.log('[Auto OCR] Starting automatic OCR for scanned PDF...');
@@ -34,30 +35,20 @@ export async function performAutomaticOCR(pdfBuffer: Buffer): Promise<OCRResult>
         await writeFile(tempPdfPath, pdfBuffer);
         console.log('[Auto OCR] PDF saved to:', tempPdfPath);
 
-        // Create Tesseract worker with explicit paths for Next.js
-        console.log('[Auto OCR] Creating Tesseract worker with custom config...');
+        // Create Tesseract worker - simplified config
+        console.log('[Auto OCR] Creating Tesseract worker...');
 
-        // Get the correct node_modules path
-        const nodeModulesPath = path.join(process.cwd(), 'node_modules');
-        const workerPath = path.join(nodeModulesPath, 'tesseract.js', 'src', 'worker-script', 'node', 'index.js');
-        const langPath = path.join(nodeModulesPath, 'tesseract.js-languages', 'fra.traineddata.gz');
-
-        console.log('[Auto OCR] Worker path:', workerPath);
-        console.log('[Auto OCR] Lang path:', langPath);
-
-        worker = await createWorker('fra', 1, {
-            workerPath: workerPath,
-            langPath: langPath,
+        worker = await createWorker({
             logger: (m) => {
-                if (m.status === 'recognizing text') {
-                    console.log(`[Tesseract] Progress: ${(m.progress * 100).toFixed(0)}%`);
-                } else if (m.status) {
-                    console.log(`[Tesseract] ${m.status}`);
-                }
+                console.log(`[Tesseract] ${m.status}: ${m.progress ? (m.progress * 100).toFixed(0) + '%' : ''}`);
             },
         });
 
-        console.log('[Auto OCR] Worker created, starting recognition...');
+        console.log('[Auto OCR] Loading French language...');
+        await worker.loadLanguage('fra');
+        await worker.initialize('fra');
+
+        console.log('[Auto OCR] Worker ready, starting recognition...');
 
         // Recognize text from PDF
         const { data } = await worker.recognize(tempPdfPath);
