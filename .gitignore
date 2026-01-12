@@ -37,3 +37,10 @@ test_*.js
 temp_*.txt
 *.tmp
 *.temp
+
+# OCR artifacts
+contract_*.pdf
+contract_*.txt
+ocr_dump.json
+debug_*.js
+debug_*.ts

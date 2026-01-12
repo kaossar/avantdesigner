@@ -7,6 +7,16 @@ import { AiService } from './ai-service';
 export class AnalysisEngine {
     static async analyze(text: string, config: AnalysisConfig): Promise<AnalysisReport> {
         const startTime = Date.now();
+
+        // 0. Relevance Check (Is this a contract?)
+        const relevanceCheck = this.validateContractRelevance(text);
+        if (!relevanceCheck.isValid) {
+            console.warn("[AnalysisEngine] Document Rejected:", relevanceCheck.reason);
+            // We can either throw or return a low-score report.
+            // Throwing enables the UI to show a specific error message easily.
+            throw new Error("Le document ne semble pas être un contrat valide. " + relevanceCheck.reason);
+        }
+
         const allRisks: DetectedRisk[] = [];
 
         // 1. Deterministic Rule Analysis (The "Clinical" Layer)
@@ -39,5 +49,36 @@ export class AnalysisEngine {
             processedAt: new Date(),
             processingTimeMs: endTime - startTime
         };
+    }
+
+    private static validateContractRelevance(text: string): { isValid: boolean, reason?: string } {
+        const lowerText = text.toLowerCase();
+
+        // List of strong indicators
+        const legalKeywords = [
+            'contrat', 'bail', 'convention', 'accord',
+            'article', 'parties', 'signature', 'loi',
+            'code civil', 'conditions générales', 'loyer',
+            'prix', 'durée', 'résiliation', 'objet',
+            'entre les soussignés'
+        ];
+
+        // Check for at least 3 keyword matches (to avoid false positives on random text containing 'prix')
+        let matchCount = 0;
+        for (const keyword of legalKeywords) {
+            if (lowerText.includes(keyword)) {
+                matchCount++;
+            }
+        }
+
+        if (text.length < 50) {
+            return { isValid: false, reason: "Le texte est trop court pour être analysé." };
+        }
+
+        if (matchCount < 2) {
+            return { isValid: false, reason: "Aucun vocabulaire juridique détecté." };
+        }
+
+        return { isValid: true };
     }
 }

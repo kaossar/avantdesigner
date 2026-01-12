@@ -12,7 +12,10 @@ interface RuleDefinition {
 const HOUSING_RULES: RuleDefinition[] = [
     {
         id: 'housing-refund-delay',
-        patterns: [/restitution.*dépôt.*garantie.*(3|4|5|6).*mois/i, /remboursement.*caution.*(60|90).*jours/i],
+        patterns: [
+            /(restitution|remboursement).*(dépôt|caution|garantie).*(3|4|5|6).*mois/i,
+            /(restitution|remboursement).*(dépôt|caution|garantie).*(60|90).*jours/i
+        ],
         severity: 'high',
         title: 'Délai de restitution du dépôt de garantie excessif',
         description: "Le contrat mentionne un délai de restitution du dépôt de garantie supérieur à la légalité (maximum 1 mois si l'état des lieux est conforme, 2 mois sinon).",

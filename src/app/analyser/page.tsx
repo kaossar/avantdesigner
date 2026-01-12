@@ -1,7 +1,5 @@
 'use client';
 
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/footer/Footer';
 import { UploadSection } from '@/components/upload/UploadSection';
 import { SecurityBadge } from '@/components/upload/SecurityBadge';
 import { motion } from 'framer-motion';
@@ -9,7 +7,6 @@ import { motion } from 'framer-motion';
 export default function AnalyserPage() {
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
-            <Header />
 
             <main className="flex-1 py-16 md:py-24">
                 <div className="container">
@@ -75,8 +72,6 @@ export default function AnalyserPage() {
                     </div>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 }
