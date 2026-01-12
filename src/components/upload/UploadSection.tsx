@@ -43,6 +43,14 @@ export function UploadSection() {
                 const data = await response.json();
 
                 if (!response.ok) {
+                    // Special handling for scanned PDFs
+                    if (data.error === 'PDF_SCANNED' || data.message?.includes('PDF_SCANNED')) {
+                        setExtractedText(''); // Clear text
+                        setIsProcessing(false);
+                        // Show scanned PDF warning (handled by DocumentPreview)
+                        return;
+                    }
+
                     throw new Error(data.error || 'Erreur lors de l\'analyse');
                 }
 

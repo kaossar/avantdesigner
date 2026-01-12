@@ -57,6 +57,25 @@ export async function POST(req: NextRequest) {
             }
         } catch (extractionError: any) {
             console.error('[API Debug] Extraction failed:', extractionError);
+
+            // Special handling for scanned PDFs
+            if (extractionError.message?.includes('PDF_SCANNED')) {
+                const message = extractionError.message.split('|')[1] || 'PDF scanné détecté';
+                return NextResponse.json(
+                    {
+                        error: 'PDF_SCANNED',
+                        message: message,
+                        text: '',
+                        suggestions: [
+                            'Utilisez l\'onglet "Scan Caméra" pour l\'OCR automatique',
+                            'Ou copiez le texte manuellement dans "Coller Texte"',
+                            'Ou convertissez le PDF en DOCX'
+                        ]
+                    },
+                    { status: 400 }
+                );
+            }
+
             return NextResponse.json(
                 {
                     error: extractionError.message || 'Failed to extract text from document.',
