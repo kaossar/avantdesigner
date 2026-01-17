@@ -119,20 +119,22 @@ npm start
   - [x] Limite 1000 caractères par chunk
 - [x] Pipeline mis à jour avec composants professionnels
 
-##### 7.3 RAG Juridique (Sprint 3 - À faire)
-- [ ] Base de connaissances locale (`python-ai/rag_setup.py`)
-  - [ ] Code Civil (articles pertinents)
-  - [ ] Loi 89-462 (baux d'habitation)
-  - [ ] Code du Travail (articles clés)
-  - [ ] Modèles de clauses neutres
-- [ ] Index vectoriel FAISS
-  - [ ] Embeddings multilingues
-  - [ ] Recherche sémantique
-  - [ ] Top-K retrieval
-- [ ] Intégration RAG dans pipeline
-  - [ ] Enrichissement des analyses
-  - [ ] Références légales automatiques
-  - [ ] Prévention hallucinations
+##### 7.3 RAG Juridique (Sprint 3 - Terminé ✅)
+- [x] Base de connaissances locale (`python-ai/knowledge_base/`)
+  - [x] Code Civil (17 articles complets)
+  - [x] Loi 89-462 (18 articles baux d'habitation)
+  - [ ] Code du Travail (articles clés) - Phase 2
+  - [ ] Modèles de clauses neutres - Phase 2
+- [x] Index vectoriel FAISS (Sprint 3+)
+  - [x] Embeddings multilingues (paraphrase-multilingual-mpnet-base-v2)
+  - [x] Recherche sémantique (sentence-transformers)
+  - [x] Top-K retrieval avec scoring
+  - [x] Cache système (30s → <1s)
+- [x] Intégration RAG dans pipeline
+  - [x] Enrichissement des analyses
+  - [x] Références légales automatiques (2.0 refs/clause)
+  - [x] Fallback keyword/semantic
+  - [x] Affichage frontend (ClauseByClauseView)
 
 ##### 7.3 Intégration Next.js (Sprint 2 - 1 jour)
 - [ ] Route API `/api/ai-analyze` (`src/app/api/ai-analyze/route.ts`)
@@ -145,19 +147,20 @@ npm start
   - [ ] Upload → Analyse → Résultat
   - [ ] Gestion erreurs réseau
 
-##### 7.4 Interface Résultats Expert (Sprint 3 - 3 jours)
-- [ ] Composant `ClauseByClauseView` (`src/components/analysis/ClauseByClauseView.tsx`)
-  - [ ] Affichage clause par clause
-  - [ ] Code couleur par niveau de risque (🟢🟡🔴)
-  - [ ] Sections : Résumé, Implications, Risques, Conformité, Recommandation
-  - [ ] Animations Framer Motion
-- [ ] Composant `ScoreCard` (`src/components/analysis/ScoreCard.tsx`)
-  - [ ] Score global avec jauge
-  - [ ] Scores détaillés (conformité, équilibre, clarté)
-  - [ ] Visualisation graphique
-- [ ] Composant `RiskSummary` (`src/components/analysis/RiskSummary.tsx`)
-  - [ ] Liste des risques détectés
-  - [ ] Filtrage par gravité
+##### 7.4 Interface Résultats Expert (Sprint 4 - Terminé ✅)
+- [x] Composant `ClauseByClauseView` (`src/components/analysis/ClauseByClauseView.tsx`)
+  - [x] Affichage clause par clause
+  - [x] Code couleur par niveau de risque (🟢🟡🔴)
+  - [x] Sections : Résumé, Implications, Risques, Conformité, Recommandation
+  - [x] Animations Framer Motion
+  - [x] Références légales RAG (section purple)
+- [x] Composant `ScoreCard` (`src/components/analysis/ScoreCard.tsx`)
+  - [x] Score global avec jauge circulaire
+  - [x] Scores détaillés (conformité, équilibre, clarté)
+  - [x] Visualisation graphique
+- [x] Composant `RiskSummary` (`src/components/analysis/RiskSummary.tsx`)
+  - [x] Liste des risques détectés
+  - [x] Filtrage par gravité
   - [ ] Actions recommandées
 - [ ] Composant `ContractSummary` (`src/components/analysis/ContractSummary.tsx`)
   - [ ] Résumé exécutif IA
@@ -168,18 +171,21 @@ npm start
   - [ ] Navigation entre sections
   - [ ] Export PDF
 
-##### 7.5 Export PDF Expert (Sprint 3 - 1 jour)
-- [ ] Service d'export (`src/lib/export/pdf-expert.ts`)
-  - [ ] Génération PDF avec `pdfkit`
-  - [ ] Sections : Score, Résumé, Clauses, Risques, Recommandations
-  - [ ] Mise en page professionnelle
-  - [ ] Références légales
-- [ ] Route API `/api/export-pdf`
-  - [ ] Génération à la demande
-  - [ ] Téléchargement direct
-- [ ] Bouton d'export dans l'interface
+##### 7.5 Export PDF Expert (Sprint 7 - Terminé ✅)
+- [x] Service d'export (`python-ai/export/pdf_generator.py`)
+  - [x] Génération PDF avec `pdfkit` + Jinja2
+  - [x] Template HTML professionnel (`export/templates/report.html`)
+  - [x] Sections : Cover, Score, Résumé, Risques, Clauses, Références légales, Annexes
+  - [x] Mise en page professionnelle (A4, marges, styles)
+  - [x] Références légales RAG incluses
+- [x] Route API `/export-pdf` (`python-ai/main.py`)
+  - [x] Génération à la demande
+  - [x] Téléchargement direct (Content-Disposition)
+  - [x] Gestion erreurs
+- [ ] Bouton d'export dans l'interface frontend
   - [ ] Loading state
-  - [ ] Gestion erreurs
+  - [ ] Appel API /export-pdf
+  - [ ] Download automatique
 
 ##### 7.6 Docker & Déploiement (Sprint 4 - 2 jours)
 - [ ] Dockerfile Python (`python-ai/Dockerfile`)
@@ -229,15 +235,145 @@ npm start
 **Roadmap Totale** : 10-11 jours pour Version Expert IA-First complète
 
 **Stack Technique** :
-- Backend IA : Python 3.11, FastAPI, Uvicorn
-- LLM : Mistral-7B-Instruct-v0.2 (Hugging Face)
-- NLP : spaCy (fr_core_news_md), CamemBERT, BARThez
-- RAG : FAISS, sentence-transformers
-- Chunking : LangChain
-- Export : pdfkit
+- Backend IA : Python 3.14, FastAPI, Uvicorn
+- LLM : Mistral-7B-Instruct-v0.2 (Hugging Face) - À intégrer
+- NLP : spaCy (fr_core_news_md), CamemBERT, BARThez - À intégrer
+- RAG : FAISS ✅, sentence-transformers ✅, paraphrase-multilingual-mpnet-base-v2 ✅
+- Chunking : Smart chunker professionnel ✅
+- Export : pdfkit ✅, Jinja2 ✅
 - Déploiement : Docker, Docker Compose
 
-#### Phase 8 : Paiement Stripe
+---
+
+#### Phase 8 : Expansion Types de Contrats (Vision Stratégique)
+
+**Objectif** : Transformer AvantDeSigner d'un outil de niche (baux) en plateforme complète d'analyse contractuelle.
+
+**État actuel** : ✅ Baux d'habitation (Loi 89-462 + Code Civil)
+
+**Roadmap complète** : 9 catégories, 100+ types de contrats
+
+##### 8.1 Contrats du Quotidien (Particuliers)
+
+**🏠 Logement** (Priorité 1)
+- [x] Bail d'habitation vide ✅
+- [ ] Bail meublé
+- [ ] Bail étudiant
+- [ ] Bail mobilité
+- [ ] État des lieux
+- [ ] Acte de cautionnement
+- [ ] Compromis de vente immobilière
+
+**💳 Consommation** (Priorité 2)
+- [ ] Contrat de crédit à la consommation
+- [ ] Crédit renouvelable
+- [ ] Prêt personnel
+- [ ] Contrat de leasing / LOA / LLD
+- [ ] CGV (Conditions Générales de Vente)
+- [ ] CGU (Conditions Générales d'Utilisation)
+- [ ] Abonnements (téléphonie, internet, streaming)
+
+**🛡️ Assurances** (Priorité 1 - Forte valeur)
+- [ ] Assurance habitation
+- [ ] Assurance auto / moto
+- [ ] Assurance santé / mutuelle
+- [ ] Assurance prévoyance
+- [ ] Assurance emprunteur
+
+##### 8.2 Contrats Professionnels
+
+**👨‍💻 Freelance / Indépendants** (Priorité 1 - Forte demande)
+- [ ] Contrat de prestation de services
+- [ ] Contrat de mission freelance
+- [ ] Contrat de sous-traitance
+- [ ] NDA / Accord de confidentialité
+- [ ] Lettre de mission
+
+**🧑‍💼 Travail Salarié** (Priorité 2)
+- [ ] CDI
+- [ ] CDD
+- [ ] Contrat d'intérim
+- [ ] Contrat d'apprentissage
+- [ ] Rupture conventionnelle
+
+##### 8.3 Contrats Business & Commercial
+
+**🤝 Relations Commerciales** (Priorité 2)
+- [ ] Contrat commercial général
+- [ ] Contrat de partenariat
+- [ ] Contrat de distribution
+- [ ] Contrat de franchise
+- [ ] Contrat de licence
+
+**📦 Vente & Fournisseurs** (Priorité 2)
+- [ ] Contrat de vente B2B
+- [ ] Contrat fournisseur
+- [ ] Contrat cadre
+- [ ] SLA (Service Level Agreement)
+
+##### 8.4 Numérique & SaaS (Stratégique)
+
+**🌐 Tech** (Priorité 1)
+- [ ] Contrat SaaS
+- [ ] Contrat d'hébergement
+- [ ] Contrat de maintenance informatique
+- [ ] Contrat de développement logiciel
+- [ ] Contrat de cybersécurité
+
+**©️ Propriété Intellectuelle** (Priorité 2)
+- [ ] Cession de droits d'auteur
+- [ ] Licence de droits d'auteur
+- [ ] Contrat d'édition
+- [ ] Contrat de marque
+
+##### 8.5 Immobilier Pro & Construction
+
+- [ ] Bail commercial
+- [ ] Bail professionnel
+- [ ] CCMI (Contrat de Construction de Maison Individuelle)
+- [ ] Contrat de maîtrise d'œuvre
+
+##### 8.6 Contrats à Risque Élevé (Forte valeur ajoutée)
+
+- [ ] Pacte d'associés
+- [ ] Statuts de société (SAS, SARL)
+- [ ] Contrat d'investissement
+- [ ] Contrat de prêt entre particuliers
+- [ ] Transaction amiable
+- [ ] Convention de divorce
+
+##### 8.7 Clauses Transversales (CRITIQUE)
+
+**Indépendamment du type de contrat, AvantDeSigner DOIT reconnaître :**
+- [x] Clauses abusives ✅
+- [x] Clauses déséquilibrées ✅
+- [x] Clauses de résiliation ✅
+- [x] Clauses pénales ✅
+- [ ] Clauses limitatives de responsabilité
+- [ ] Clauses de reconduction tacite
+- [ ] Clauses de compétence territoriale
+- [ ] Clauses de force majeure
+- [ ] Clauses RGPD
+- [ ] Clauses de paiement / retard / pénalités
+
+**Impact Stratégique** :
+- ✅ Utile aux particuliers (logement, assurances, consommation)
+- ✅ Indispensable aux freelances (prestations, NDA)
+- ✅ Crédible pour les entreprises (commercial, SaaS, B2B)
+- ✅ Différencié face aux simples outils d'analyse
+- ✅ Monétisable en B2C + B2B + assurances + legaltech
+
+**Architecture Technique pour Expansion** :
+1. Base de connaissances modulaire par domaine juridique
+2. Classification automatique du type de contrat
+3. Sélection des règles applicables
+4. RAG sémantique évolutif (index FAISS multi-domaines)
+5. Pipeline modulaire avec analyseurs spécialisés
+
+---
+
+#### Phase 9 : Paiement Stripe
+
 - [ ] Intégration Stripe Checkout
 - [ ] Gestion abonnements
 - [ ] Webhooks

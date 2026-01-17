@@ -82,6 +82,33 @@ async def analyze_contract(request: AnalysisRequest):
         logger.error(f"❌ Analysis failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
+@app.post("/export-pdf")
+async def export_pdf(analysis_data: dict):
+    """Export analysis results as professional PDF report"""
+    try:
+        logger.info("📄 Generating PDF report...")
+        
+        from export import generate_pdf_report
+        from fastapi.responses import Response
+        
+        # Generate PDF
+        pdf_bytes = generate_pdf_report(analysis_data)
+        
+        logger.info("✅ PDF generated successfully")
+        
+        # Return PDF as downloadable file
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=rapport_analyse_{analysis_data.get('contract_type', 'contrat')}.pdf"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"❌ PDF generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
 if __name__ == "__main__":
     logger.info("🚀 Starting AI Contract Analysis Service...")
     uvicorn.run(
