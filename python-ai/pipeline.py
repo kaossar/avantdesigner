@@ -56,11 +56,21 @@ class ContractAIPipeline:
         logger.info("🔍 Stage 4: Entity extraction...")
         entities = self._extract_entities(cleaned_text)
         
-        logger.info("🧠 Stage 5: Clause analysis (AI)...")
+        logger.info("📚 Stage 4.5: Initializing RAG service...")
+        from rag_service import get_rag_service
+        self.rag_service = get_rag_service()
+        
+        logger.info("🧠 Stage 5: Clause analysis (AI + RAG)...")
         clauses_analysis = []
         for chunk in chunks[:10]:  # Limit to 10 clauses for demo
             logger.info(f"   → Analyzing clause {chunk['clause_number']}/{min(len(chunks), 10)} ({chunk['type']})...")
             analysis = await self._analyze_clause_professional(chunk, contract_type)
+            
+            # Enrich with RAG legal references
+            rag_enrichment = self.rag_service.enrich_clause_analysis(chunk["text"], chunk["type"])
+            analysis["legal_references"] = rag_enrichment.get("references", [])
+            analysis["legal_context"] = rag_enrichment.get("legal_context", "")
+            
             clauses_analysis.append(analysis)
         
         logger.info("⚠️ Stage 6: Risk detection...")
