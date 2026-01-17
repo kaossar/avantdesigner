@@ -8,6 +8,7 @@ from typing import Dict, List, Any
 # Import new professional components
 from preprocessing.cleaner import TextCleaner
 from preprocessing.chunker import SmartChunker
+from ai_models import ai_models  # Sprint 3: Mistral, CamemBERT, BARThez
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,16 @@ class ContractAIPipeline:
         cleaning_metadata = cleaning_result["metadata"]
         logger.info(f"   → Cleaned: {cleaning_metadata['reduction_percent']}% reduction")
         
-        logger.info("🏷️ Stage 2: Contract classification...")
-        contract_type = self._classify_contract(cleaned_text[:1000])
+        logger.info("🏷️ Stage 2: Contract classification (CamemBERT)...")
+        # Sprint 3: Use Zero-Shot Classification
+        candidate_labels = ["Bail d'habitation", "Contrat de travail", "Contrat de vente", "Contrat de prestation"]
+        classification = ai_models.classify_contract(cleaned_text, candidate_labels)
+        
+        if classification and classification['scores'][0] > 0.4:
+             contract_type = classification['labels'][0]
+        else:
+             contract_type = self._classify_contract(cleaned_text[:1000]) # Fallback
+             
         logger.info(f"   → Type: {contract_type}")
         
         logger.info("✂️ Stage 3: Smart chunking with context...")
@@ -53,8 +62,11 @@ class ContractAIPipeline:
         chunks = self.chunker.chunk(cleaned_text)
         logger.info(f"   → {len(chunks)} clauses detected")
         
-        logger.info("🔍 Stage 4: Entity extraction...")
-        entities = self._extract_entities(cleaned_text)
+        logger.info("🔍 Stage 4: Entity extraction (CamemBERT NER)...")
+        # Sprint 3: Use NER model
+        ner_entities = ai_models.extract_entities(cleaned_text)
+        entities = self._extract_entities(cleaned_text) # Keep regex as baseline
+        # Merge logic could go here
         
         logger.info("📚 Stage 4.5: Initializing RAG service (Semantic)...")
         try:
@@ -165,7 +177,8 @@ class ContractAIPipeline:
             "full_text": clause_text,
             "clause_type": clause_type,
             "context": chunk["context"],
-            "resume": f"Clause {clause_num} - {clause_type.capitalize()}",
+            "context": chunk["context"],
+            "resume": ai_models.summarize_clause(clause_text), # Sprint 3: BARThez
             "implications": self._generate_implications(clause_text, clause_type),
             "risques": self._generate_risks(clause_text, risk_level),
             "conformite": self._check_conformity(clause_text, clause_type, contract_type),

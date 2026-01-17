@@ -8,16 +8,41 @@ export interface ExtractedClause {
 }
 
 export interface DetectedRisk {
-    id: string;
+    clause_number?: number;
+    clause_type?: string;
+    clause_preview?: string;
+    issue?: string;
     severity: Severity;
-    title: string;
-    description: string;
     recommendation: string;
-    clause: ExtractedClause;
-    source: 'rule' | 'ai';
+    // Legacy/Optional fields
+    id?: string;
+    title?: string;
+    description?: string;
+    clause?: ExtractedClause;
+    source?: 'rule' | 'ai';
 }
 
-// Legal Reference from RAG
+export interface Recommendation {
+    priority: 'urgent' | 'important' | 'info';
+    action: string;
+    detail: string;
+}
+
+// ... (other interfaces)
+
+export interface AnalysisReport {
+    documentId?: string;
+    contractType: string;
+    score: AnalysisScore;
+    risks: DetectedRisk[];
+    recommendations?: Recommendation[]; // Added missing field
+    summary: string;
+    clauses?: AnalyzedClause[];
+    entities?: ExtractedEntities;
+    metadata?: AnalysisMetadata;
+    processedAt?: Date;
+    processingTimeMs?: number;
+}
 export interface LegalReference {
     source: string;        // "Loi 89-462" or "Code Civil"
     article: string;       // "Article 22"
@@ -83,6 +108,7 @@ export interface AnalysisReport {
     contractType: string;
     score: AnalysisScore;
     risks: DetectedRisk[];
+    recommendations?: Recommendation[];
     summary: string;
     clauses?: AnalyzedClause[];
     entities?: ExtractedEntities;
