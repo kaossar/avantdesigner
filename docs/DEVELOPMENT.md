@@ -95,6 +95,8 @@ npm start
   - [x] CamemBERT (classification + NER) - Sprint 3
   - [x] BARThez (résumé) - Sprint 3
   - [x] Sentence-Transformers (RAG) - Sprint 3
+
+##### 7.5 Export PDF Professionnel (Sprint 7 - Terminé ✅)
 - [x] Fichier `requirements.txt` complet
   - [x] fastapi, uvicorn
   - [x] pdfplumber (Sprint 2)
@@ -149,7 +151,10 @@ npm start
   - [x] Gestion erreurs réseau
 
 ##### 7.4 Interface Résultats Expert (Sprint 4 - Terminé ✅)
-- [x] Composant `ClauseByClauseView` (`src/components/analysis/ClauseByClauseView.tsx`)
+- [x] Composant `ClauseByClauseView`
+- [x] Composant `ContractSummary` (Données réelles intégrées)
+- [x] Page résultats (Navigation sticky interne, Layout Responsive)
+- [x] Affichage des recommandations (Design final avec priorités)
   - [x] Affichage clause par clause
   - [x] Code couleur par niveau de risque (🟢🟡🔴)
   - [x] Sections : Résumé, Implications, Risques, Conformité, Recommandation
