@@ -37,7 +37,7 @@ export function UploadSection() {
             formData.append('file', fileObj);
 
             try {
-                const response = await fetch('/api/analyze', {
+                const response = await fetch('/api/ai-analyze', {
                     method: 'POST',
                     body: formData,
                 });
@@ -82,7 +82,7 @@ export function UploadSection() {
             formData.append('file', fileObj);
 
             try {
-                const response = await fetch('/api/analyze', {
+                const response = await fetch('/api/ai-analyze', {
                     method: 'POST',
                     body: formData,
                 });

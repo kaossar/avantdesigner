@@ -4,71 +4,71 @@ const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
 export async function POST(request: NextRequest) {
     try {
-        const { text } = await request.json();
+        const body = await request.json();
+        const { text, contract_type = 'auto' } = body;
 
-        if (!text || text.trim().length < 50) {
+        if (!text) {
             return NextResponse.json(
-                { error: 'Le texte est trop court pour être analysé' },
+                { error: 'Text is required' },
                 { status: 400 }
             );
         }
-
-        console.log('[AI] Envoi au service Python IA...');
-        console.log(`[AI] Texte: ${text.length} caractères`);
 
         // Call Python AI service
         const response = await fetch(`${AI_SERVICE_URL}/analyze`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
             },
             body: JSON.stringify({
                 text,
-                contract_type: 'auto'
-            })
+                contract_type
+            }),
+            // Timeout after 60 seconds
+            signal: AbortSignal.timeout(60000),
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('[AI] Service error:', response.status, errorText);
-            throw new Error(`AI service error: ${response.status}`);
+            console.error('AI service error:', errorText);
+            return NextResponse.json(
+                { error: 'Analysis failed', details: errorText },
+                { status: response.status }
+            );
         }
 
-        const analysis = await response.json();
+        const result = await response.json();
 
-        console.log('[AI] Analyse terminée:', {
-            type: analysis.contract_type,
-            clauses: analysis.clauses?.length || 0,
-            risks: analysis.risks?.length || 0,
-            score: analysis.score?.global || 0
-        });
+        return NextResponse.json(result);
 
-        // Transform to match existing frontend format
-        return NextResponse.json({
-            text: text,
-            data: {
-                contractType: analysis.contract_type,
-                summary: analysis.summary,
-                score: analysis.score?.global || 0,
-                risks: analysis.risks || [],
-                clauses: analysis.clauses || [],
-                recommendations: analysis.recommendations || [],
-                metadata: analysis.metadata || {}
+    } catch (error) {
+        console.error('AI analysis error:', error);
+
+        if (error instanceof Error) {
+            if (error.name === 'AbortError') {
+                return NextResponse.json(
+                    { error: 'Analysis timeout - request took too long' },
+                    { status: 504 }
+                );
             }
-        });
 
-    } catch (error: any) {
-        console.error('[AI] Erreur:', error);
+            return NextResponse.json(
+                { error: 'Internal server error', details: error.message },
+                { status: 500 }
+            );
+        }
 
-        // Fallback to existing analysis if AI service is down
         return NextResponse.json(
-            {
-                error: 'Service IA temporairement indisponible',
-                details: error.message,
-                fallback: true
-            },
-            { status: 503 }
+            { error: 'Unknown error occurred' },
+            { status: 500 }
         );
     }
+}
+
+export async function GET() {
+    return NextResponse.json({
+        status: 'ok',
+        service: 'ai-analyze-proxy',
+        backend: AI_SERVICE_URL
+    });
 }

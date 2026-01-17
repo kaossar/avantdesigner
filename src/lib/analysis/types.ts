@@ -1,4 +1,5 @@
 export type Severity = 'low' | 'medium' | 'high' | 'critical';
+export type RiskLevel = 'low' | 'medium' | 'high';
 
 export interface ExtractedClause {
     text: string;
@@ -13,27 +14,81 @@ export interface DetectedRisk {
     description: string;
     recommendation: string;
     clause: ExtractedClause;
-    source: 'rule' | 'ai'; // To distinguish between deterministic rules and AI suggestions
+    source: 'rule' | 'ai';
+}
+
+// Legal Reference from RAG
+export interface LegalReference {
+    source: string;        // "Loi 89-462" or "Code Civil"
+    article: string;       // "Article 22"
+    title: string;         // Article title
+    summary: string;       // Article summary
+    relevance?: string;    // Relevance percentage (from semantic search)
+}
+
+// Analyzed Clause (from Python backend)
+export interface AnalyzedClause {
+    clause_number: number;
+    clause_text: string;
+    clause_type: string;
+    resume: string;
+    implications: string;
+    risques: string;
+    conformite: string;
+    recommandation: string;
+    risk_level: RiskLevel;
+    legal_references?: LegalReference[];
+    legal_context?: string;
+    search_method?: 'semantic' | 'keyword';
+}
+
+// Extracted Entities
+export interface ExtractedEntities {
+    parties?: string[];
+    montants?: string[];
+    dates?: string[];
+    durees?: string[];
+}
+
+// Analysis Metadata
+export interface AnalysisMetadata {
+    total_clauses?: number;
+    analyzed_clauses?: number;
+    high_risk_count?: number;
+    medium_risk_count?: number;
+    low_risk_count?: number;
+    search_method?: string;
+    cleaning_stats?: any;
 }
 
 export interface AnalysisScore {
     total: number; // 0-100
-    details: {
-        legal: number;
-        financial: number;
-        clarity: number;
+    conformity?: number;
+    balance?: number;
+    clarity?: number;
+    details?: {
+        legal?: number;
+        financial?: number;
+        clarity?: number;
+        total_clauses?: number;
+        high_risks?: number;
+        medium_risks?: number;
+        low_risks?: number;
     };
-    grade: 'A' | 'B' | 'C' | 'D' | 'F';
+    grade?: 'A' | 'B' | 'C' | 'D' | 'F';
 }
 
 export interface AnalysisReport {
     documentId?: string;
-    contractType: string; // 'housing', 'work', etc.
+    contractType: string;
     score: AnalysisScore;
     risks: DetectedRisk[];
     summary: string;
-    processedAt: Date;
-    processingTimeMs: number;
+    clauses?: AnalyzedClause[];
+    entities?: ExtractedEntities;
+    metadata?: AnalysisMetadata;
+    processedAt?: Date;
+    processingTimeMs?: number;
 }
 
 // Engine Configuration

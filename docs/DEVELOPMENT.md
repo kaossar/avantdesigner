@@ -136,16 +136,17 @@ npm start
   - [x] Fallback keyword/semantic
   - [x] Affichage frontend (ClauseByClauseView)
 
-##### 7.3 Intégration Next.js (Sprint 2 - 1 jour)
-- [ ] Route API `/api/ai-analyze` (`src/app/api/ai-analyze/route.ts`)
-  - [ ] Communication avec service Python
-  - [ ] Gestion timeout
-  - [ ] Fallback en cas d'erreur
-- [ ] Variables d'environnement
-  - [ ] `AI_SERVICE_URL` (http://localhost:8000 ou Docker)
-- [ ] Tests d'intégration
-  - [ ] Upload → Analyse → Résultat
-  - [ ] Gestion erreurs réseau
+##### 7.3 Intégration Next.js (Sprint 2 - Terminé ✅)
+- [x] Route API `/api/ai-analyze` (`src/app/api/ai-analyze/route.ts`)
+  - [x] Communication avec service Python (`http://localhost:8000`)
+  - [x] Gestion timeout (60s)
+  - [x] Fallback en cas d'erreur
+  - [x] Proxy vers `/analyze` Python
+- [x] Variables d'environnement
+  - [x] `AI_SERVICE_URL` (local/prod)
+- [x] Tests d'intégration
+  - [x] Upload → Analyse → Résultat (Testé via E2E)
+  - [x] Gestion erreurs réseau
 
 ##### 7.4 Interface Résultats Expert (Sprint 4 - Terminé ✅)
 - [x] Composant `ClauseByClauseView` (`src/components/analysis/ClauseByClauseView.tsx`)
