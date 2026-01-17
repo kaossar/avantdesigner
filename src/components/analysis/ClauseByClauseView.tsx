@@ -12,6 +12,15 @@ interface Clause {
     conformite: string;
     recommandation: string;
     risk_level: 'low' | 'medium' | 'high';
+    legal_references?: Array<{
+        source: string;
+        article: string;
+        title: string;
+        summary: string;
+        relevance?: string;
+    }>;
+    legal_context?: string;
+    search_method?: string;
 }
 
 interface ClauseByClauseViewProps {
@@ -124,8 +133,8 @@ export function ClauseByClauseView({ clauses }: ClauseByClauseViewProps) {
                             {/* Risques */}
                             {clause.risques && (
                                 <div className={`rounded-lg p-3 ${clause.risk_level === 'high' ? 'bg-red-100/50' :
-                                        clause.risk_level === 'medium' ? 'bg-amber-100/50' :
-                                            'bg-green-100/50'
+                                    clause.risk_level === 'medium' ? 'bg-amber-100/50' :
+                                        'bg-green-100/50'
                                     }`}>
                                     <h4 className="font-bold text-sm mb-1 flex items-center gap-2">
                                         ⚠️ Risques
@@ -149,6 +158,46 @@ export function ClauseByClauseView({ clauses }: ClauseByClauseViewProps) {
                                         ✨ Recommandation IA
                                     </h4>
                                     <p className="text-sm text-blue-800">{clause.recommandation}</p>
+                                </div>
+                            )}
+
+                            {/* Références Légales RAG */}
+                            {clause.legal_references && clause.legal_references.length > 0 && (
+                                <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="font-bold text-sm text-purple-700 flex items-center gap-2">
+                                            📚 Références Légales
+                                        </h4>
+                                        {clause.search_method && (
+                                            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-600">
+                                                {clause.search_method === 'semantic' ? '🧠 Recherche sémantique' : '🔍 Recherche keywords'}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        {clause.legal_references.map((ref, idx) => (
+                                            <div key={idx} className="bg-white/70 rounded p-2 border border-purple-100">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="flex-1">
+                                                        <p className="text-xs font-bold text-purple-900">
+                                                            {ref.source} {ref.article}
+                                                        </p>
+                                                        <p className="text-xs text-purple-700 mt-0.5">
+                                                            {ref.title}
+                                                        </p>
+                                                        <p className="text-xs text-slate-600 mt-1 italic">
+                                                            {ref.summary}
+                                                        </p>
+                                                    </div>
+                                                    {ref.relevance && (
+                                                        <span className="text-xs font-bold text-purple-600 whitespace-nowrap">
+                                                            {ref.relevance}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
