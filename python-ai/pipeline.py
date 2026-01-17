@@ -56,9 +56,15 @@ class ContractAIPipeline:
         logger.info("🔍 Stage 4: Entity extraction...")
         entities = self._extract_entities(cleaned_text)
         
-        logger.info("📚 Stage 4.5: Initializing RAG service...")
-        from rag_service import get_rag_service
-        self.rag_service = get_rag_service()
+        logger.info("📚 Stage 4.5: Initializing RAG service (Semantic)...")
+        try:
+            from rag_service_semantic import get_semantic_rag_service
+            self.rag_service = get_semantic_rag_service()
+            logger.info("   → Using Semantic RAG (Hugging Face)")
+        except Exception as e:
+            logger.warning(f"   → Semantic RAG unavailable ({e}), falling back to keyword RAG")
+            from rag_service import get_rag_service
+            self.rag_service = get_rag_service()
         
         logger.info("🧠 Stage 5: Clause analysis (AI + RAG)...")
         clauses_analysis = []
@@ -70,6 +76,7 @@ class ContractAIPipeline:
             rag_enrichment = self.rag_service.enrich_clause_analysis(chunk["text"], chunk["type"])
             analysis["legal_references"] = rag_enrichment.get("references", [])
             analysis["legal_context"] = rag_enrichment.get("legal_context", "")
+            analysis["search_method"] = rag_enrichment.get("search_method", "keyword")
             
             clauses_analysis.append(analysis)
         
