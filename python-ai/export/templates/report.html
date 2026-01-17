@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport d'Analyse Contractuelle - AvantDeSigner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Cover Page */
+        .cover {
+            text-align: center;
+            padding: 100px 40px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cover h1 {
+            font-size: 36pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .cover .subtitle {
+            font-size: 18pt;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cover .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            color: #1e3a8a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48pt;
+            font-weight: bold;
+            margin: 40px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .cover .meta {
+            margin-top: 40px;
+            font-size: 12pt;
+        }
+
+        /* Content Pages */
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            font-size: 18pt;
+            color: #1e3a8a;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1e3a8a;
+        }
+
+        h3 {
+            font-size: 14pt;
+            color: #334155;
+            margin: 20px 0 10px 0;
+        }
+
+        h4 {
+            font-size: 11pt;
+            color: #475569;
+            margin: 15px 0 8px 0;
+            font-weight: 600;
+        }
+
+        /* Executive Summary */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .summary-card .label {
+            font-size: 9pt;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .summary-card .value {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        /* Risk Badges */
+        .risk-high {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .risk-medium {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .risk-low {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .badge-high { background: #fee2e2; color: #991b1b; }
+        .badge-medium { background: #fef3c7; color: #92400e; }
+        .badge-low { background: #d1fae5; color: #065f46; }
+
+        /* Clauses */
+        .clause {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .clause-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .clause-number {
+            font-weight: bold;
+            color: #1e3a8a;
+            font-size: 11pt;
+        }
+
+        .clause-text {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-style: italic;
+            color: #475569;
+            margin: 10px 0;
+            border-left: 3px solid #cbd5e1;
+        }
+
+        .analysis-section {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .analysis-section strong {
+            color: #1e3a8a;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Legal References */
+        .legal-refs {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .legal-refs h4 {
+            color: #7c3aed;
+            margin-bottom: 8px;
+        }
+
+        .legal-ref {
+            background: white;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 3px solid #a78bfa;
+        }
+
+        .legal-ref .ref-title {
+            font-weight: bold;
+            color: #6d28d9;
+            font-size: 9pt;
+        }
+
+        .legal-ref .ref-summary {
+            font-size: 8pt;
+            color: #64748b;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 40px;
+            right: 40px;
+            text-align: center;
+            font-size: 8pt;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cover Page -->
+    <div class="cover">
+        <h1>📄 Rapport d'Analyse Contractuelle</h1>
+        <div class="subtitle">AvantDeSigner - Analyse IA Professionnelle</div>
+        
+        <div class="score-circle">
+            {{ score.global }}/100
+        </div>
+        
+        <div class="meta">
+            <p><strong>Type de contrat :</strong> {{ contract_type }}</p>
+            <p><strong>Date d'analyse :</strong> {{ report_date }}</p>
+            <p><strong>Clauses analysées :</strong> {{ total_clauses }}</p>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Executive Summary -->
+    <div class="content">
+        <h2>📊 Résumé Exécutif</h2>
+        
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Conformité Légale</div>
+                <div class="value">{{ score.conformite }}/100</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Équilibre Contractuel</div>
+                <div class="value">{{ score.equilibre }}/100</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Clarté</div>
+                <div class="value">{{ score.clarte }}/100</div>
+            </div>
+        </div>
+
+        <h3>Statistiques</h3>
+        <table>
+            <tr>
+                <th>Métrique</th>
+                <th>Valeur</th>
+            </tr>
+            <tr>
+                <td>Clauses analysées</td>
+                <td>{{ total_clauses }}</td>
+            </tr>
+            <tr>
+                <td>Risques élevés 🔴</td>
+                <td>{{ risk_counts.high }}</td>
+            </tr>
+            <tr>
+                <td>Risques moyens 🟡</td>
+                <td>{{ risk_counts.medium }}</td>
+            </tr>
+            <tr>
+                <td>Conformes 🟢</td>
+                <td>{{ risk_counts.low }}</td>
+            </tr>
+        </table>
+
+        <h3>Recommandations Principales</h3>
+        {% for rec in top_recommendations %}
+        <div class="risk-high">
+            <strong>{{ loop.index }}.</strong> {{ rec }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Risks Analysis -->
+    <div class="content">
+        <h2>⚠️ Analyse des Risques</h2>
+
+        {% if risk_counts.high > 0 %}
+        <h3>Risques Élevés ({{ risk_counts.high }})</h3>
+        {% for risk in risks %}
+        {% if risk.severity == 'high' %}
+        <div class="risk-high">
+            <span class="risk-badge badge-high">RISQUE ÉLEVÉ</span>
+            <h4>{{ risk.title }}</h4>
+            <p>{{ risk.description }}</p>
+            {% if risk.legal_reference %}
+            <p style="margin-top: 8px; font-size: 9pt; color: #7c3aed;">
+                <strong>📚 Référence :</strong> {{ risk.legal_reference }}
+            </p>
+            {% endif %}
+            <p style="margin-top: 8px; font-size: 9pt; color: #1e3a8a;">
+                <strong>✨ Recommandation :</strong> {{ risk.recommendation }}
+            </p>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+
+        {% if risk_counts.medium > 0 %}
+        <h3>Risques Moyens ({{ risk_counts.medium }})</h3>
+        {% for risk in risks %}
+        {% if risk.severity == 'medium' %}
+        <div class="risk-medium">
+            <span class="risk-badge badge-medium">ATTENTION</span>
+            <h4>{{ risk.title }}</h4>
+            <p>{{ risk.description }}</p>
+            {% if risk.recommendation %}
+            <p style="margin-top: 8px; font-size: 9pt; color: #1e3a8a;">
+                <strong>✨ Recommandation :</strong> {{ risk.recommendation }}
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Clause by Clause Analysis -->
+    <div class="content">
+        <h2>📋 Analyse Clause par Clause</h2>
+
+        {% for clause in clauses %}
+        <div class="clause">
+            <div class="clause-header">
+                <span class="clause-number">Clause {{ clause.clause_number }} - {{ clause.clause_type }}</span>
+                <span class="risk-badge {% if clause.risk_level == 'high' %}badge-high{% elif clause.risk_level == 'medium' %}badge-medium{% else %}badge-low{% endif %}">
+                    {% if clause.risk_level == 'high' %}RISQUE ÉLEVÉ
+                    {% elif clause.risk_level == 'medium' %}ATTENTION
+                    {% else %}CONFORME{% endif %}
+                </span>
+            </div>
+
+            <div class="clause-text">
+                "{{ clause.clause_text }}"
+            </div>
+
+            <div class="analysis-section">
+                <strong>💡 En clair</strong>
+                <p>{{ clause.resume }}</p>
+            </div>
+
+            <div class="analysis-section">
+                <strong>📋 Implications</strong>
+                <p>{{ clause.implications }}</p>
+            </div>
+
+            {% if clause.risques %}
+            <div class="analysis-section">
+                <strong>⚠️ Risques</strong>
+                <p>{{ clause.risques }}</p>
+            </div>
+            {% endif %}
+
+            <div class="analysis-section">
+                <strong>⚖️ Conformité légale</strong>
+                <p>{{ clause.conformite }}</p>
+            </div>
+
+            {% if clause.recommandation %}
+            <div class="analysis-section">
+                <strong>✨ Recommandation IA</strong>
+                <p>{{ clause.recommandation }}</p>
+            </div>
+            {% endif %}
+
+            {% if clause.legal_references %}
+            <div class="legal-refs">
+                <h4>📚 Références Légales</h4>
+                {% for ref in clause.legal_references %}
+                <div class="legal-ref">
+                    <div class="ref-title">{{ ref.source }} {{ ref.article }} : {{ ref.title }}</div>
+                    <div class="ref-summary">{{ ref.summary }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Annexes -->
+    <div class="content">
+        <h2>📎 Annexes</h2>
+
+        <h3>Entités Extraites</h3>
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Valeur</th>
+            </tr>
+            {% if entities.parties %}
+            <tr>
+                <td>Parties</td>
+                <td>{{ entities.parties | join(', ') }}</td>
+            </tr>
+            {% endif %}
+            {% if entities.montants %}
+            <tr>
+                <td>Montants</td>
+                <td>{{ entities.montants | join(', ') }}</td>
+            </tr>
+            {% endif %}
+            {% if entities.dates %}
+            <tr>
+                <td>Dates</td>
+                <td>{{ entities.dates | join(', ') }}</td>
+            </tr>
+            {% endif %}
+        </table>
+
+        <h3>Métadonnées</h3>
+        <table>
+            <tr>
+                <th>Information</th>
+                <th>Valeur</th>
+            </tr>
+            <tr>
+                <td>Date d'analyse</td>
+                <td>{{ report_date }}</td>
+            </tr>
+            <tr>
+                <td>Méthode RAG</td>
+                <td>{{ metadata.search_method | default('Semantic') }}</td>
+            </tr>
+            <tr>
+                <td>Version</td>
+                <td>AvantDeSigner v1.0</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>AvantDeSigner - Analyse Contractuelle Professionnelle | Généré le {{ report_date }}</p>
+    </div>
+</body>
+</html>
