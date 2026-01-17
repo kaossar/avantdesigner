@@ -1,0 +1,213 @@
+{
+  "contract_type": "Bail d'habitation",
+  "summary": "Contrat analysé avec 7 clauses. ⚠️ 3 clause(s) à risque élevé détectée(s).",
+  "entities": {
+    "montants": [
+      "500",
+      "2500",
+      "7500"
+    ],
+    "dates": [],
+    "durees": [
+      "3"
+    ]
+  },
+  "clauses": [
+    {
+      "clause_number": 1,
+      "clause_text": "ENTRE LES SOUSSIGNÉS :\nLe Bailleur : Monsieur Jean DUPONT\nLe Preneur : Madame Marie MARTIN",
+      "full_text": "ENTRE LES SOUSSIGNÉS :\nLe Bailleur : Monsieur Jean DUPONT\nLe Preneur : Madame Marie MARTIN",
+      "clause_type": "general",
+      "context": "[Contrat: Bail d'habitation, Clause 1, Type: general]",
+      "resume": "Clause 1 - General",
+      "implications": "Cette clause établit les droits et obligations des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low"
+    },
+    {
+      "clause_number": 2,
+      "clause_text": "ARTICLE 1 : LOYER\nLe loyer mensuel est fixé à 2500 euros, avec une pénalité de 500 euros en cas de retard de paiement.",
+      "full_text": "ARTICLE 1 : LOYER\nLe loyer mensuel est fixé à 2500 euros, avec une pénalité de 500 euros en cas de retard de paiement.",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 2, Type: financial]",
+      "resume": "Clause 2 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "⚡ Clause nécessitant une vérification approfondie.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟡 Demander une clarification ou modification",
+      "risk_level": "medium"
+    },
+    {
+      "clause_number": 3,
+      "clause_text": "ARTICLE 2 : DÉPÔT DE GARANTIE\nUn dépôt de garantie de 7500 euros (3 mois de loyer) est versé. Ce montant est non conforme à la loi.",
+      "full_text": "ARTICLE 2 : DÉPÔT DE GARANTIE\nUn dépôt de garantie de 7500 euros (3 mois de loyer) est versé. Ce montant est non conforme à la loi.",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 3, Type: financial]",
+      "resume": "Clause 3 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "⚠️ Clause potentiellement problématique nécessitant une attention juridique.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🔴 Consulter un avocat avant signature",
+      "risk_level": "high"
+    },
+    {
+      "clause_number": 4,
+      "clause_text": "ARTICLE 3 : ACCÈS AUX LOCAUX\nLe bailleur se réserve le droit d'entrer dans les locaux à tout moment sans préavis. Cette clause est abusive.",
+      "full_text": "ARTICLE 3 : ACCÈS AUX LOCAUX\nLe bailleur se réserve le droit d'entrer dans les locaux à tout moment sans préavis. Cette clause est abusive.",
+      "clause_type": "duration",
+      "context": "[Contrat: Bail d'habitation, Clause 4, Type: duration]",
+      "resume": "Clause 4 - Duration",
+      "implications": "Cette clause fixe la durée d'engagement.",
+      "risques": "⚡ Clause nécessitant une vérification approfondie.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟡 Demander une clarification ou modification",
+      "risk_level": "medium"
+    },
+    {
+      "clause_number": 5,
+      "clause_text": "ARTICLE 4 : RÉSILIATION UNILATÉRALE\nLe bailleur peut résilier le contrat de manière unilatérale sans préavis en cas de simple retard de paiement.",
+      "full_text": "ARTICLE 4 : RÉSILIATION UNILATÉRALE\nLe bailleur peut résilier le contrat de manière unilatérale sans préavis en cas de simple retard de paiement.",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 5, Type: financial]",
+      "resume": "Clause 5 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "⚡ Clause nécessitant une vérification approfondie.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟡 Demander une clarification ou modification",
+      "risk_level": "medium"
+    },
+    {
+      "clause_number": 6,
+      "clause_text": "ARTICLE 5 : TRAVAUX\nTous les travaux, même structurels, sont à la charge exclusive du locataire. Cette clause est illégale.",
+      "full_text": "ARTICLE 5 : TRAVAUX\nTous les travaux, même structurels, sont à la charge exclusive du locataire. Cette clause est illégale.",
+      "clause_type": "general",
+      "context": "[Contrat: Bail d'habitation, Clause 6, Type: general]",
+      "resume": "Clause 6 - General",
+      "implications": "Cette clause établit les droits et obligations des parties.",
+      "risques": "⚠️ Clause potentiellement problématique nécessitant une attention juridique.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🔴 Consulter un avocat avant signature",
+      "risk_level": "high"
+    },
+    {
+      "clause_number": 7,
+      "clause_text": "ARTICLE 6 : INTERDICTION\nIl est strictement interdit au locataire de recevoir des visiteurs après 20h.",
+      "full_text": "ARTICLE 6 : INTERDICTION\nIl est strictement interdit au locataire de recevoir des visiteurs après 20h.",
+      "clause_type": "general",
+      "context": "[Contrat: Bail d'habitation, Clause 7, Type: general]",
+      "resume": "Clause 7 - General",
+      "implications": "Cette clause établit les droits et obligations des parties.",
+      "risques": "⚠️ Clause potentiellement problématique nécessitant une attention juridique.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🔴 Consulter un avocat avant signature",
+      "risk_level": "high"
+    }
+  ],
+  "risks": [
+    {
+      "clause_number": 2,
+      "clause_type": "financial",
+      "clause_preview": "ARTICLE 1 : LOYER\nLe loyer mensuel est fixé à 2500 euros, avec une pénalité de 500 euros en cas de retard de paiement.",
+      "issue": "⚡ Clause nécessitant une vérification approfondie.",
+      "severity": "medium",
+      "recommendation": "🟡 Demander une clarification ou modification"
+    },
+    {
+      "clause_number": 3,
+      "clause_type": "financial",
+      "clause_preview": "ARTICLE 2 : DÉPÔT DE GARANTIE\nUn dépôt de garantie de 7500 euros (3 mois de loyer) est versé. Ce montant est non conforme à la loi.",
+      "issue": "⚠️ Clause potentiellement problématique nécessitant une attention juridique.",
+      "severity": "high",
+      "recommendation": "🔴 Consulter un avocat avant signature"
+    },
+    {
+      "clause_number": 4,
+      "clause_type": "duration",
+      "clause_preview": "ARTICLE 3 : ACCÈS AUX LOCAUX\nLe bailleur se réserve le droit d'entrer dans les locaux à tout moment sans préavis. Cette clause est abusive.",
+      "issue": "⚡ Clause nécessitant une vérification approfondie.",
+      "severity": "medium",
+      "recommendation": "🟡 Demander une clarification ou modification"
+    },
+    {
+      "clause_number": 5,
+      "clause_type": "financial",
+      "clause_preview": "ARTICLE 4 : RÉSILIATION UNILATÉRALE\nLe bailleur peut résilier le contrat de manière unilatérale sans préavis en cas de simple retard de paiement.",
+      "issue": "⚡ Clause nécessitant une vérification approfondie.",
+      "severity": "medium",
+      "recommendation": "🟡 Demander une clarification ou modification"
+    },
+    {
+      "clause_number": 6,
+      "clause_type": "general",
+      "clause_preview": "ARTICLE 5 : TRAVAUX\nTous les travaux, même structurels, sont à la charge exclusive du locataire. Cette clause est illégale.",
+      "issue": "⚠️ Clause potentiellement problématique nécessitant une attention juridique.",
+      "severity": "high",
+      "recommendation": "🔴 Consulter un avocat avant signature"
+    },
+    {
+      "clause_number": 7,
+      "clause_type": "general",
+      "clause_preview": "ARTICLE 6 : INTERDICTION\nIl est strictement interdit au locataire de recevoir des visiteurs après 20h.",
+      "issue": "⚠️ Clause potentiellement problématique nécessitant une attention juridique.",
+      "severity": "high",
+      "recommendation": "🔴 Consulter un avocat avant signature"
+    }
+  ],
+  "score": {
+    "global": 41,
+    "conformity": 0,
+    "balance": 85,
+    "clarity": 80,
+    "details": {
+      "total_clauses": 7,
+      "high_risks": 3,
+      "medium_risks": 3,
+      "low_risks": 1
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "important",
+      "action": "Demander une modification",
+      "detail": "Clause 2: 🟡 Demander une clarification ou modification"
+    },
+    {
+      "priority": "urgent",
+      "action": "Consulter un avocat",
+      "detail": "Clause 3 (financial): ⚠️ Clause potentiellement problématique nécessitant une attention juridique."
+    },
+    {
+      "priority": "important",
+      "action": "Demander une modification",
+      "detail": "Clause 4: 🟡 Demander une clarification ou modification"
+    },
+    {
+      "priority": "important",
+      "action": "Demander une modification",
+      "detail": "Clause 5: 🟡 Demander une clarification ou modification"
+    },
+    {
+      "priority": "urgent",
+      "action": "Consulter un avocat",
+      "detail": "Clause 6 (general): ⚠️ Clause potentiellement problématique nécessitant une attention juridique."
+    },
+    {
+      "priority": "urgent",
+      "action": "Consulter un avocat",
+      "detail": "Clause 7 (general): ⚠️ Clause potentiellement problématique nécessitant une attention juridique."
+    }
+  ],
+  "metadata": {
+    "total_clauses": 7,
+    "analyzed_clauses": 7,
+    "high_risk_count": 3,
+    "medium_risk_count": 3,
+    "cleaning_stats": {
+      "original_length": 890,
+      "cleaned_length": 890,
+      "reduction_percent": 0.0
+    }
+  }
+}

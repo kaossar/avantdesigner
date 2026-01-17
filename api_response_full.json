@@ -1,0 +1,196 @@
+{
+  "contract_type": "Bail d'habitation",
+  "summary": "Contrat analysé avec 5 clauses identifiées. Aucun risque majeur détecté.",
+  "entities": {
+    "montants": [
+      "850",
+      "1700"
+    ],
+    "dates": [],
+    "durees": [
+      "3"
+    ]
+  },
+  "clauses": [
+    {
+      "clause_number": 1,
+      "clause_text": "ENTRE LES SOUSSIGNÉS :\nLe Bailleur : Monsieur Jean DUPONT\nLe Preneur : Madame Marie MARTIN",
+      "full_text": "ENTRE LES SOUSSIGNÉS :\nLe Bailleur : Monsieur Jean DUPONT\nLe Preneur : Madame Marie MARTIN",
+      "clause_type": "general",
+      "context": "[Contrat: Bail d'habitation, Clause 1, Type: general]",
+      "resume": "Clause 1 - General",
+      "implications": "Cette clause établit les droits et obligations des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 25",
+          "title": "Travaux",
+          "summary": "Les grosses réparations (gros murs, toiture, structure) sont à la charge exclusive du bailleur. Les réparations locatives (entretien courant) sont à l..."
+        },
+        {
+          "source": "Code Civil",
+          "article": "Article 1719",
+          "title": "Obligations du bailleur",
+          "summary": "Le bailleur est obligé de délivrer au preneur la chose louée, de l'entretenir en état de servir à l'usage pour lequel elle a été louée, et d'en faire ..."
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 25 (Travaux): Les grosses réparations (gros murs, toiture, structure) sont à la charge exclusive du bailleur. Les réparations locatives (entretien courant) sont à la charge du locataire...."
+    },
+    {
+      "clause_number": 2,
+      "clause_text": "ARTICLE 1 : LOYER\nLe loyer mensuel est fixé à 850 euros.",
+      "full_text": "ARTICLE 1 : LOYER\nLe loyer mensuel est fixé à 850 euros.",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 2, Type: financial]",
+      "resume": "Clause 2 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 22",
+          "title": "Dépôt de garantie",
+          "summary": "Le dépôt de garantie ne peut excéder un mois de loyer en principal (hors charges) pour les locations vides. Pour les locations meublées, il ne peut ex..."
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 3",
+          "title": "Durée du bail",
+          "summary": "Le contrat de location est conclu pour une durée minimale de trois ans lorsque le bailleur est une personne physique et de six ans lorsqu'il est une p..."
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 22 (Dépôt de garantie): Le dépôt de garantie ne peut excéder un mois de loyer en principal (hors charges) pour les locations vides. Pour les locations meublées, il ne peut excéder deux mois de loyer...."
+    },
+    {
+      "clause_number": 3,
+      "clause_text": "ARTICLE 2 : DÉPÔT DE GARANTIE\nUn dépôt de garantie de 1700 euros est versé.",
+      "full_text": "ARTICLE 2 : DÉPÔT DE GARANTIE\nUn dépôt de garantie de 1700 euros est versé.",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 3, Type: financial]",
+      "resume": "Clause 3 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 22",
+          "title": "Dépôt de garantie",
+          "summary": "Le dépôt de garantie ne peut excéder un mois de loyer en principal (hors charges) pour les locations vides. Pour les locations meublées, il ne peut ex..."
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 3",
+          "title": "Durée du bail",
+          "summary": "Le contrat de location est conclu pour une durée minimale de trois ans lorsque le bailleur est une personne physique et de six ans lorsqu'il est une p..."
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 22 (Dépôt de garantie): Le dépôt de garantie ne peut excéder un mois de loyer en principal (hors charges) pour les locations vides. Pour les locations meublées, il ne peut excéder deux mois de loyer...."
+    },
+    {
+      "clause_number": 4,
+      "clause_text": "ARTICLE 3 : DURÉE\nLe bail est conclu pour 3 ans à compter du 1er février 2024.",
+      "full_text": "ARTICLE 3 : DURÉE\nLe bail est conclu pour 3 ans à compter du 1er février 2024.",
+      "clause_type": "duration",
+      "context": "[Contrat: Bail d'habitation, Clause 4, Type: duration]",
+      "resume": "Clause 4 - Duration",
+      "implications": "Cette clause fixe la durée d'engagement.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 3",
+          "title": "Durée du bail",
+          "summary": "Le contrat de location est conclu pour une durée minimale de trois ans lorsque le bailleur est une personne physique et de six ans lorsqu'il est une p..."
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 22",
+          "title": "Dépôt de garantie",
+          "summary": "Le dépôt de garantie ne peut excéder un mois de loyer en principal (hors charges) pour les locations vides. Pour les locations meublées, il ne peut ex..."
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 3 (Durée du bail): Le contrat de location est conclu pour une durée minimale de trois ans lorsque le bailleur est une personne physique et de six ans lorsqu'il est une personne morale...."
+    },
+    {
+      "clause_number": 5,
+      "clause_text": "ARTICLE 4 : RÉSILIATION\nLe locataire peut résilier avec un préavis de 3 mois.",
+      "full_text": "ARTICLE 4 : RÉSILIATION\nLe locataire peut résilier avec un préavis de 3 mois.",
+      "clause_type": "termination",
+      "context": "[Contrat: Bail d'habitation, Clause 5, Type: termination]",
+      "resume": "Clause 5 - Termination",
+      "implications": "Cette clause régit les conditions de fin du contrat.",
+      "risques": "⚡ Clause nécessitant une vérification approfondie.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟡 Demander une clarification ou modification",
+      "risk_level": "medium",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 5",
+          "title": "Préavis du locataire",
+          "summary": "Le locataire peut résilier le contrat à tout moment, sous réserve de respecter un préavis de trois mois. Ce délai est réduit à un mois dans certains c..."
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 22",
+          "title": "Dépôt de garantie",
+          "summary": "Le dépôt de garantie ne peut excéder un mois de loyer en principal (hors charges) pour les locations vides. Pour les locations meublées, il ne peut ex..."
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 5 (Préavis du locataire): Le locataire peut résilier le contrat à tout moment, sous réserve de respecter un préavis de trois mois. Ce délai est réduit à un mois dans certains cas (mutation, perte d'emploi, etc.)...."
+    }
+  ],
+  "risks": [
+    {
+      "clause_number": 5,
+      "clause_type": "termination",
+      "clause_preview": "ARTICLE 4 : RÉSILIATION\nLe locataire peut résilier avec un préavis de 3 mois.",
+      "issue": "⚡ Clause nécessitant une vérification approfondie.",
+      "severity": "medium",
+      "recommendation": "🟡 Demander une clarification ou modification"
+    }
+  ],
+  "score": {
+    "global": 86,
+    "conformity": 90,
+    "balance": 85,
+    "clarity": 80,
+    "details": {
+      "total_clauses": 5,
+      "high_risks": 0,
+      "medium_risks": 1,
+      "low_risks": 4
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "important",
+      "action": "Demander une modification",
+      "detail": "Clause 5: 🟡 Demander une clarification ou modification"
+    }
+  ],
+  "metadata": {
+    "total_clauses": 5,
+    "analyzed_clauses": 5,
+    "high_risk_count": 0,
+    "medium_risk_count": 1,
+    "cleaning_stats": {
+      "original_length": 414,
+      "cleaned_length": 414,
+      "reduction_percent": 0.0
+    }
+  }
+}

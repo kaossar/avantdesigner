@@ -1,12 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ScoreCard } from '@/components/analysis/ScoreCard';
 import { ContractSummary } from '@/components/analysis/ContractSummary';
 import { RiskSummary } from '@/components/analysis/RiskSummary';
 import { ClauseByClauseView } from '@/components/analysis/ClauseByClauseView';
 import { AnalysisReport } from '@/lib/analysis/types';
-import { ArrowLeft, Download, Share2 } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Loader2 } from 'lucide-react';
 
 interface AnalysisResultsProps {
     report: AnalysisReport;
@@ -14,6 +15,9 @@ interface AnalysisResultsProps {
 }
 
 export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+    const [pdfError, setPdfError] = useState<string | null>(null);
+
     // Transform report data to match expert component interfaces
     const score = {
         global: report.score?.total || report.score || 0,
@@ -37,9 +41,63 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
         cleaning_stats: report.metadata?.cleaning_stats
     };
 
-    const handleExportPdf = () => {
-        // TODO: Implement PDF export
-        alert('Export PDF - Fonctionnalité à venir');
+    const handleExportPdf = async () => {
+        setIsGeneratingPDF(true);
+        setPdfError(null);
+
+        try {
+            // Prepare analysis data for PDF export
+            const analysisData = {
+                contract_type: contractType,
+                score: {
+                    global: score.global,
+                    conformite: score.conformity,
+                    equilibre: score.balance,
+                    clarte: score.clarity
+                },
+                clauses: report.clauses || [],
+                risks: report.risks || [],
+                entities: entities,
+                metadata: {
+                    ...metadata,
+                    search_method: 'semantic' // From RAG
+                }
+            };
+
+            // Call Python API
+            const response = await fetch('http://localhost:8000/export-pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(analysisData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`PDF generation failed: ${response.statusText}`);
+            }
+
+            // Get PDF blob
+            const blob = await response.blob();
+
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rapport_analyse_${contractType.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('PDF generation error:', error);
+            setPdfError(error instanceof Error ? error.message : 'Erreur lors de la génération du PDF');
+        } finally {
+            setIsGeneratingPDF(false);
+        }
     };
 
     const handleShare = () => {
@@ -68,9 +126,18 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
                         <Share2 size={16} className="mr-2" />
                         Partager
                     </Button>
-                    <Button variant="secondary" onClick={handleExportPdf}>
-                        <Download size={16} className="mr-2" />
-                        PDF
+                    <Button variant="secondary" onClick={handleExportPdf} disabled={isGeneratingPDF}>
+                        {isGeneratingPDF ? (
+                            <>
+                                <Loader2 size={16} className="mr-2 animate-spin" />
+                                Génération...
+                            </>
+                        ) : (
+                            <>
+                                <Download size={16} className="mr-2" />
+                                PDF
+                            </>
+                        )}
                     </Button>
                 </div>
             </div>
@@ -107,8 +174,8 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
                             <div
                                 key={index}
                                 className={`border-l-4 rounded-lg p-4 ${rec.priority === 'urgent' ? 'border-red-500 bg-red-50' :
-                                        rec.priority === 'important' ? 'border-amber-500 bg-amber-50' :
-                                            'border-blue-500 bg-blue-50'
+                                    rec.priority === 'important' ? 'border-amber-500 bg-amber-50' :
+                                        'border-blue-500 bg-blue-50'
                                     }`}
                             >
                                 <p className="font-bold text-sm mb-1">
