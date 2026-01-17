@@ -1,30 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-
-interface Clause {
-    clause_number: number;
-    clause_text: string;
-    clause_type: string;
-    resume: string;
-    implications: string;
-    risques: string;
-    conformite: string;
-    recommandation: string;
-    risk_level: 'low' | 'medium' | 'high';
-    legal_references?: Array<{
-        source: string;
-        article: string;
-        title: string;
-        summary: string;
-        relevance?: string;
-    }>;
-    legal_context?: string;
-    search_method?: string;
-}
+import { AnalyzedClause } from '@/lib/analysis/types';
 
 interface ClauseByClauseViewProps {
-    clauses: Clause[];
+    clauses: AnalyzedClause[];
 }
 
 export function ClauseByClauseView({ clauses }: ClauseByClauseViewProps) {

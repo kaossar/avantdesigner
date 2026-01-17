@@ -90,11 +90,11 @@ npm start
   - [x] Analyse clause par clause (règles MVP)
   - [x] Score de risque multi-axes
   - [x] Génération recommandations
-- [x] Configuration modèles Hugging Face (version légère)
-  - [ ] Mistral-7B-Instruct-v0.2 (LLM principal) - Sprint 3
-  - [ ] CamemBERT (classification + NER) - Sprint 3
-  - [ ] BARThez (résumé) - Sprint 3
-  - [ ] Sentence-Transformers (RAG) - Sprint 3
+- [x] Configuration modèles Hugging Face (Sprint 3 + 3+)
+  - [x] Mistral-7B-Instruct-v0.2 (LLM principal via API) - Sprint 3
+  - [x] CamemBERT (classification + NER) - Sprint 3
+  - [x] BARThez (résumé) - Sprint 3
+  - [x] Sentence-Transformers (RAG) - Sprint 3
 - [x] Fichier `requirements.txt` complet
   - [x] fastapi, uvicorn
   - [x] pdfplumber (Sprint 2)
@@ -183,10 +183,10 @@ npm start
   - [x] Génération à la demande
   - [x] Téléchargement direct (Content-Disposition)
   - [x] Gestion erreurs
-- [ ] Bouton d'export dans l'interface frontend
-  - [ ] Loading state
-  - [ ] Appel API /export-pdf
-  - [ ] Download automatique
+- [x] Bouton d'export dans l'interface frontend
+  - [x] Loading state
+  - [x] Appel API `/api/export-pdf`
+  - [x] Download automatique
 
 ##### 7.6 Docker & Déploiement (Sprint 6 - Terminé ✅)
 - [x] Dockerfile Python (`python-ai/Dockerfile`)

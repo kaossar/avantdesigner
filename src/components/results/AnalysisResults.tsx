@@ -20,7 +20,7 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
 
     // Transform report data to match expert component interfaces
     const score = {
-        global: report.score?.total || report.score || 0,
+        global: report.score?.total || 0,
         conformity: report.score?.conformity || 85,
         balance: report.score?.balance || 80,
         clarity: report.score?.clarity || 75,
@@ -64,8 +64,8 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
                 }
             };
 
-            // Call Python API
-            const response = await fetch('http://localhost:8000/export-pdf', {
+            // Call Next.js Proxy API
+            const response = await fetch('/api/export-pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

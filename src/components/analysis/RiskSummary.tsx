@@ -3,17 +3,10 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-interface Risk {
-    clause_number: number;
-    clause_type: string;
-    clause_preview: string;
-    issue: string;
-    severity: 'low' | 'medium' | 'high';
-    recommendation: string;
-}
+import { DetectedRisk } from '@/lib/analysis/types';
 
 interface RiskSummaryProps {
-    risks: Risk[];
+    risks: DetectedRisk[];
 }
 
 export function RiskSummary({ risks }: RiskSummaryProps) {
@@ -54,8 +47,8 @@ export function RiskSummary({ risks }: RiskSummaryProps) {
                 <button
                     onClick={() => setFilter('all')}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'all'
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                         }`}
                 >
                     Tous ({risks.length})
@@ -63,8 +56,8 @@ export function RiskSummary({ risks }: RiskSummaryProps) {
                 <button
                     onClick={() => setFilter('high')}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'high'
-                            ? 'bg-red-600 text-white'
-                            : 'bg-red-50 text-red-700 hover:bg-red-100'
+                        ? 'bg-red-600 text-white'
+                        : 'bg-red-50 text-red-700 hover:bg-red-100'
                         }`}
                 >
                     🔴 Élevés ({highCount})
@@ -72,8 +65,8 @@ export function RiskSummary({ risks }: RiskSummaryProps) {
                 <button
                     onClick={() => setFilter('medium')}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'medium'
-                            ? 'bg-amber-600 text-white'
-                            : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                        ? 'bg-amber-600 text-white'
+                        : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
                         }`}
                 >
                     🟡 Moyens ({mediumCount})
@@ -81,8 +74,8 @@ export function RiskSummary({ risks }: RiskSummaryProps) {
                 <button
                     onClick={() => setFilter('low')}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'low'
-                            ? 'bg-green-600 text-white'
-                            : 'bg-green-50 text-green-700 hover:bg-green-100'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-green-50 text-green-700 hover:bg-green-100'
                         }`}
                 >
                     🟢 Faibles ({lowCount})
@@ -112,7 +105,7 @@ export function RiskSummary({ risks }: RiskSummaryProps) {
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-2">
                                             <h4 className="font-bold text-slate-900">
-                                                Clause {risk.clause_number} - {risk.clause_type}
+                                                Clause {risk.clause_number || '?'} - {risk.clause_type || 'Général'}
                                             </h4>
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold border ${badge.class}`}>
                                                 {badge.text}
@@ -120,14 +113,14 @@ export function RiskSummary({ risks }: RiskSummaryProps) {
                                         </div>
 
                                         <p className="text-sm text-slate-700 mb-3 italic">
-                                            "{risk.clause_preview}"
+                                            "{risk.clause_preview || risk.description || '...'}"
                                         </p>
 
                                         <div className="bg-white/50 rounded-lg p-3 mb-3">
                                             <p className="text-sm font-semibold text-slate-800 mb-1">
                                                 ⚠️ Problème détecté :
                                             </p>
-                                            <p className="text-sm text-slate-700">{risk.issue}</p>
+                                            <p className="text-sm text-slate-700">{risk.issue || risk.title || 'Risque détecté'}</p>
                                         </div>
 
                                         <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
