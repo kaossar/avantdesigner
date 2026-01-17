@@ -157,23 +157,58 @@ class ContractAIPipeline:
         }
     
     def _assess_risk_professional(self, text: str, clause_type: str, contract_type: str) -> str:
-        """Enhanced risk assessment"""
+        """Enhanced risk assessment with moderate keywords and default risks"""
         text_lower = text.lower()
         
-        # High risk keywords
-        if any(kw in text_lower for kw in ['interdit', 'illégal', 'abusif', 'non conforme']):
+        # High risk keywords (critical issues)
+        high_risk_keywords = [
+            'interdit', 'illégal', 'abusif', 'non conforme',
+            'frauduleux', 'discriminatoire', 'contraire à la loi'
+        ]
+        
+        # Medium risk keywords (need verification)
+        medium_risk_keywords = [
+            'pénalité', 'amende', 'sanction', 'majoration',
+            'unilatéral', 'sans préavis', 'immédiat',
+            'exclusif', 'seul', 'unique responsabilité',
+            'renonciation', 'décharge', 'exonération'
+        ]
+        
+        # Low risk keywords (attention points)
+        low_risk_keywords = [
+            'obligation', 'responsabilité', 'charge',
+            'frais', 'coût', 'paiement',
+            'résiliation', 'rupture', 'fin',
+            'modification', 'changement', 'révision'
+        ]
+        
+        # Check for high risk keywords
+        if any(kw in text_lower for kw in high_risk_keywords):
             return 'high'
         
-        # Type-specific risks
+        # Check for medium risk keywords
+        if any(kw in text_lower for kw in medium_risk_keywords):
+            return 'medium'
+        
+        # Type-specific default risks (improved UX)
         if clause_type == 'financial':
-            # Check for excessive amounts or penalties
-            if any(kw in text_lower for kw in ['pénalité', 'amende', 'sanction']):
+            # Financial clauses should always be verified
+            if any(kw in text_lower for kw in low_risk_keywords):
                 return 'medium'
+            return 'low'
         
         if clause_type == 'termination':
-            # Check for unbalanced termination clauses
-            if 'unilatéral' in text_lower or 'sans préavis' in text_lower:
+            # Termination clauses are critical
+            return 'medium'
+        
+        if clause_type == 'guarantee':
+            # Guarantee clauses need attention
+            if 'dépôt' in text_lower or 'garantie' in text_lower:
                 return 'medium'
+        
+        # Check for low risk keywords
+        if any(kw in text_lower for kw in low_risk_keywords):
+            return 'low'
         
         return 'low'
     
