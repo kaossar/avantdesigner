@@ -187,25 +187,28 @@ npm start
   - [ ] Appel API /export-pdf
   - [ ] Download automatique
 
-##### 7.6 Docker & Déploiement (Sprint 4 - 2 jours)
-- [ ] Dockerfile Python (`python-ai/Dockerfile`)
-  - [ ] Base image Python 3.11
-  - [ ] Installation dépendances système
-  - [ ] Téléchargement modèles au build
-  - [ ] Configuration GPU (optionnel)
-- [ ] Docker Compose (`docker-compose.yml`)
-  - [ ] Service Next.js (web)
-  - [ ] Service Python (ai-service)
-  - [ ] Volume pour cache modèles
-  - [ ] Network configuration
-- [ ] Scripts de déploiement
-  - [ ] `docker-compose up -d`
-  - [ ] Health checks
-  - [ ] Logs monitoring
-- [ ] Documentation déploiement
-  - [ ] Prérequis système (RAM, GPU)
-  - [ ] Variables d'environnement
-  - [ ] Troubleshooting
+##### 7.6 Docker & Déploiement (Sprint 6 - Terminé ✅)
+- [x] Dockerfile Python (`python-ai/Dockerfile`)
+  - [x] Base image Python 3.14-slim
+  - [x] Installation dépendances système (wkhtmltopdf)
+  - [x] Installation requirements.txt
+  - [x] Cache directories (rag_cache, export/templates)
+  - [x] Health check configuré
+  - [x] CMD uvicorn
+- [x] Docker Compose (`docker-compose.yml`)
+  - [x] Service Next.js (web) :3000
+  - [x] Service Python (ai-service) :8000
+  - [x] Volumes persistants (ai-cache, rag-cache)
+  - [x] Network configuration
+  - [x] Environment variables
+  - [x] Health checks
+  - [x] Auto-restart policies
+- [x] Documentation déploiement (`DOCKER.md`)
+  - [x] Quick start guide
+  - [x] Commandes développement
+  - [x] Troubleshooting
+  - [x] Production deployment
+  - [x] Architecture diagram
 
 ##### 7.7 Tests & Validation (Sprint 4 - 1 jour)
 - [ ] Tests unitaires Python
