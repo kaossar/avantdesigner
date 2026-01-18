@@ -4,7 +4,7 @@ Validates file size, MIME type, and format
 """
 
 FILE_LIMITS = {
-    "max_size": 50 * 1024 * 1024,  # 50 MB
+    "max_size": 50 * 1024 * 1024,  # 50 MB (Consistent with Frontend)
     "allowed_mime_types": [
         "text/plain",
         "application/pdf",

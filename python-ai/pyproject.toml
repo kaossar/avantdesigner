@@ -1,0 +1,30 @@
+[project]
+name = "python-ai"
+version = "0.1.0"
+description = "AI Contract Analysis Service"
+authors = [
+    {name = "AvantDesigner", email = "contact@avantdesigner.com"}
+]
+readme = "README.md"
+requires-python = "^3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn", 
+    "python-multipart",
+    "python-dotenv",
+    "pdfplumber",
+    "pymupdf",
+    "easyocr",
+    "numpy",
+    "jinja2",
+    "pdfkit",
+    "sentence-transformers",
+    "langchain",
+    "transformers",
+    # "faiss-cpu", # Often problematic on Windows, enable if needed later
+    "accelerate"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

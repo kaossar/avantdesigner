@@ -47,6 +47,7 @@ class ContractAIPipeline:
         
         logger.info("🏷️ Stage 2: Contract classification (CamemBERT)...")
         # Sprint 3: Use Zero-Shot Classification
+        # Stage 2: Classification using CamemBERT (Zero-Shot)
         candidate_labels = ["Bail d'habitation", "Contrat de travail", "Contrat de vente", "Contrat de prestation"]
         classification = ai_models.classify_contract(cleaned_text, candidate_labels)
         
@@ -56,6 +57,11 @@ class ContractAIPipeline:
              contract_type = self._classify_contract(cleaned_text[:1000]) # Fallback
              
         logger.info(f"   → Type: {contract_type}")
+        
+        # Note: OCR handling is now moved to main.py / ocr_service.py
+        # Pipeline receives already extracted text.
+        if len(cleaned_text.strip()) < 50:
+             logger.warning("⚠️ Warning: Analyzed text is very short. Semantic analysis may be limited.")
         
         logger.info("✂️ Stage 3: Smart chunking with context...")
         self.chunker = SmartChunker(contract_type=contract_type, max_chunk_size=1000)
@@ -167,8 +173,19 @@ class ContractAIPipeline:
         clause_type = chunk["type"]
         clause_num = chunk["clause_number"]
         
-        # Enhanced risk assessment based on clause type
-        risk_level = self._assess_risk_professional(clause_text, clause_type, contract_type)
+        # Enhanced risk assessment (Hybrid: Mistral AI + Rules)
+        ai_risk = ai_models.analyze_risk_mistral(clause_text, clause_type, contract_type)
+        
+        if ai_risk:
+            logger.info(f"   🤖 Mistral Analysis: {ai_risk.get('risk_level', 'unknown')}")
+            risk_level = ai_risk.get('risk_level', 'low')
+            limitations = ai_risk.get('explanation', '')
+            recommendation = ai_risk.get('recommendation', '')
+        else:
+            # Fallback to rules if AI fails or no token
+            risk_level = self._assess_risk_professional(clause_text, clause_type, contract_type)
+            limitations = self._generate_risks(clause_text, risk_level)
+            recommendation = self._generate_recommendation(risk_level, clause_type)
         
         # Generate contextual analysis
         return {
@@ -180,9 +197,9 @@ class ContractAIPipeline:
             "context": chunk["context"],
             "resume": ai_models.summarize_clause(clause_text), # Sprint 3: BARThez
             "implications": self._generate_implications(clause_text, clause_type),
-            "risques": self._generate_risks(clause_text, risk_level),
+            "risques": limitations, # From AI or Rules
             "conformite": self._check_conformity(clause_text, clause_type, contract_type),
-            "recommandation": self._generate_recommendation(risk_level, clause_type),
+            "recommandation": recommendation, # From AI or Rules
             "risk_level": risk_level
         }
     

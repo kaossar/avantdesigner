@@ -44,3 +44,14 @@ contract_*.txt
 ocr_dump.json
 debug_*.js
 debug_*.ts
+
+# Python / Poetry / Venv
+python-ai/venv/
+python-ai/venv312/
+python-ai/__pycache__/
+python-ai/.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local

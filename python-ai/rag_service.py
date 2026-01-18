@@ -33,11 +33,12 @@ class LegalRAGService:
         """Load complete legal knowledge base - 35 articles"""
         logger.info(f"📚 Loading complete legal knowledge base...")
         
-        self.articles = self._get_complete_knowledge_base()
+        # Load all knowledge bases
+        self.articles.extend(self._load_markdown_kb("knowledge_base/loi_89_462.md", "Loi 89-462"))
+        self.articles.extend(self._load_markdown_kb("knowledge_base/code_civil.md", "Code Civil"))
+        self.articles.extend(self._load_markdown_kb("knowledge_base/code_travail.md", "Code du Travail"))
         
         logger.info(f"✅ Loaded {len(self.articles)} legal articles")
-        logger.info(f"   - Loi 89-462: {len([a for a in self.articles if a['source'] == 'Loi 89-462'])} articles")
-        logger.info(f"   - Code Civil: {len([a for a in self.articles if a['source'] == 'Code Civil'])} articles")
     
     def _get_complete_knowledge_base(self) -> List[Dict[str, Any]]:
         """Complete knowledge base with all 35 articles"""
