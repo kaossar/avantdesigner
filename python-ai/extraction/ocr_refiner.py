@@ -131,24 +131,99 @@ Texte :
         else:
             refined = paragraph
         
+        # 🔒 LEGAL-GRADE SAFETY CHECK
+        if not self._is_safe_refinement(paragraph, refined):
+            logger.warning("⚠️ Unsafe AI refinement detected, reverting to original")
+            return paragraph, [{'type': 'rejected', 'reason': 'unsafe_divergence'}]
+        
         # Detect changes
         changes = self._detect_changes(paragraph, refined)
         
         return refined, changes
     
+    def _is_safe_refinement(self, original: str, refined: str) -> bool:
+        """
+        🔒 LEGAL-GRADE SAFETY CHECK
+        Rejects refinement if it diverges too much or modifies critical legal terms
+        """
+        if original == refined:
+            return True
+        
+        # 1. Length must be quasi-identical (max 5% difference)
+        len_ratio = min(len(original), len(refined)) / max(len(original), len(refined))
+        if len_ratio < 0.95:
+            logger.warning(f"⚠️ Length divergence: {len_ratio:.2%}")
+            return False
+        
+        # 2. Critical legal terms must be unchanged
+        critical_terms = [
+            # Négations
+            "ne", "pas", "aucun", "jamais", "sans",
+            # Modaux juridiques
+            "doit", "peut", "pourra", "devra",
+            # Obligations
+            "obligatoire", "interdit", "autorisé", "requis",
+            # Temporalité
+            "avant", "après", "pendant", "jusqu'à",
+            # Conditions
+            "si", "sauf", "excepté", "sous réserve"
+        ]
+        
+        original_lower = original.lower()
+        refined_lower = refined.lower()
+        
+        for term in critical_terms:
+            original_count = original_lower.count(term)
+            refined_count = refined_lower.count(term)
+            
+            if original_count != refined_count:
+                logger.warning(f"⚠️ Critical term '{term}' count changed: {original_count} → {refined_count}")
+                return False
+        
+        # 3. Word count must be very similar (max 10% difference)
+        original_words = len(original.split())
+        refined_words = len(refined.split())
+        word_ratio = min(original_words, refined_words) / max(original_words, refined_words)
+        
+        if word_ratio < 0.90:
+            logger.warning(f"⚠️ Word count divergence: {original_words} → {refined_words}")
+            return False
+        
+        return True
+    
     def _detect_changes(self, original: str, refined: str) -> List[Dict]:
-        """Detect what changed between original and refined"""
+        """
+        Improved change detection with character-level analysis
+        Returns detailed change information for transparency
+        """
         changes = []
         
         if original == refined:
             return changes
         
-        # Simple word-level diff
+        # 1. Character-level diff
+        char_changes = 0
+        for i, (c1, c2) in enumerate(zip(original, refined)):
+            if c1 != c2:
+                char_changes += 1
+        
+        # Account for length difference
+        char_changes += abs(len(original) - len(refined))
+        
+        change_ratio = char_changes / max(len(original), len(refined))
+        
+        changes.append({
+            'type': 'character_diff',
+            'chars_changed': char_changes,
+            'change_ratio': round(change_ratio, 3),
+            'severity': 'high' if change_ratio > 0.1 else 'medium' if change_ratio > 0.05 else 'low'
+        })
+        
+        # 2. Word-level diff
         original_words = original.split()
         refined_words = refined.split()
         
         if len(original_words) != len(refined_words):
-            # Structure changed - might be risky
             changes.append({
                 'type': 'structure',
                 'severity': 'high',
@@ -156,31 +231,55 @@ Texte :
                 'refined_words': len(refined_words)
             })
         
-        # Character-level changes
-        changes.append({
-            'type': 'text',
-            'original': original[:100],
-            'refined': refined[:100]
-        })
+        # 3. Punctuation changes
+        original_punct = sum(1 for c in original if c in '.,;:!?')
+        refined_punct = sum(1 for c in refined if c in '.,;:!?')
+        
+        if original_punct != refined_punct:
+            changes.append({
+                'type': 'punctuation',
+                'severity': 'low',
+                'original_count': original_punct,
+                'refined_count': refined_punct
+            })
+        
+        # 4. Sample of actual changes (first 200 chars)
+        if original[:200] != refined[:200]:
+            changes.append({
+                'type': 'text_sample',
+                'original': original[:200],
+                'refined': refined[:200]
+            })
         
         return changes
     
     def _calculate_confidence(self, original: str, refined: str) -> float:
-        """Calculate confidence in the refinement"""
+        """
+        Conservative confidence scoring for legal-grade refinement
+        Lower scores = more prudent
+        """
         if original == refined:
             return 1.0
         
-        # Calculate similarity
-        original_len = len(original)
-        refined_len = len(refined)
+        # Check if refinement passed safety check
+        if not self._is_safe_refinement(original, refined):
+            return 0.3  # Low confidence for unsafe refinement
         
-        # If length changed significantly, low confidence
-        len_ratio = min(original_len, refined_len) / max(original_len, refined_len)
+        # Calculate change magnitude
+        char_changes = sum(1 for c1, c2 in zip(original, refined) if c1 != c2)
+        char_changes += abs(len(original) - len(refined))
+        change_ratio = char_changes / max(len(original), len(refined))
         
-        if len_ratio < 0.9:
-            return 0.5  # Low confidence
-        
-        return 0.8  # Moderate confidence
+        # Conservative scoring
+        if change_ratio < 0.02:  # < 2% change (mostly accents/punctuation)
+            return 0.8
+        elif change_ratio < 0.05:  # < 5% change
+            return 0.7
+        elif change_ratio < 0.10:  # < 10% change
+            return 0.6
+        else:
+            return 0.5  # Significant changes = lower confidence
+
     
     def _fallback_response(self, text: str, error: str = None) -> Dict:
         """Return fallback response when AI refinement fails"""
