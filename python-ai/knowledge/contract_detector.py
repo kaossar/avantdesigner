@@ -141,9 +141,17 @@ class ComprehensiveContractDetector:
                 key='credit_consommation',
                 name='Contrat de Crédit à la Consommation',
                 category=ContractCategory.DAILY_CONSUMPTION,
-                keywords=['crédit', 'consommation', 'prêt', 'emprunteur', 'taeg', 'mensualité'],
+                keywords=['crédit', 'consommation', 'prêt', 'emprunteur', 'taeg', 'mensualité', 'bordereau de rétractation'],
                 legal_codes=['code_consommation_credit'],
                 priority=2
+            ),
+            ContractTypeDefinition(
+                 key='carte_bancaire',
+                 name='Contrat Carte Bancaire',
+                 category=ContractCategory.DAILY_CONSUMPTION,
+                 keywords=['carte bancaire', 'convention de compte', 'débit immédiat', 'débit différé', 'plafond de paiement', 'code confidentiel'],
+                 legal_codes=['code_monetaire', 'code_consommation'],
+                 priority=2
             ),
             ContractTypeDefinition(
                 key='credit_renouvelable',
@@ -697,6 +705,76 @@ class ComprehensiveContractDetector:
     
     def _build_legal_database(self) -> Dict[str, List[LegalReference]]:
         """Build legal references database (simplified for now)"""
+            # ========== 8. INSURANCE CONTRACTS (NEW) ==========
+            ContractTypeDefinition(
+                key='assurance_habitation',
+                name='Assurance Habitation (MRH)',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['multirisque habitation', 'mrh', 'dégât des eaux', 'incendie', 'vol', 'catastrophes naturelles', 'résidence principale'],
+                legal_codes=['code_assurances'],
+                priority=2
+            ),
+            ContractTypeDefinition(
+                key='assurance_auto',
+                name='Assurance Auto / Moto',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['assurance auto', 'bonus-malus', 'responsabilité civile', 'bris de glace', 'tiers collision', 'conducteur principal', 'carte verte', 'véhicule assuré'],
+                legal_codes=['code_assurances', 'code_route'],
+                priority=2
+            ),
+            ContractTypeDefinition(
+                key='assurance_sante',
+                name='Assurance Santé / Mutuelle',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['mutuelle', 'complémentaire santé', 'ticket modérateur', 'télétransmission', 'noemie', 'soins courants', 'dentaire', 'optique', 'remboursement sécu'],
+                legal_codes=['code_assurances', 'code_securite_sociale'],
+                priority=2
+            ),
+            ContractTypeDefinition(
+                key='assurance_prevoyance',
+                name='Assurance Prévoyance / Décès',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['prévoyance', 'capital décès', 'incapacité', 'invalidité', 'rente', 'bénéficiaire', 'accident de la vie'],
+                legal_codes=['code_assurances'],
+                priority=2
+            ),
+            ContractTypeDefinition(
+                key='assurance_emprunteur',
+                name='Assurance Emprunteur',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['assurance emprunteur', 'assurance prêt', 'perte d\'emploi', 'itt', 'ipt', 'quotité', 'hamon', 'bourquin', 'lemoine'],
+                legal_codes=['code_assurances', 'code_consommation'],
+                priority=3
+            ),
+            ContractTypeDefinition(
+                key='assurance_scolaire',
+                name='Assurance Scolaire',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['assurance scolaire', 'extra-scolaire', 'responsabilité civile enfant', 'dommages corporels', 'activités scolaires'],
+                legal_codes=['code_assurances'],
+                priority=3
+            ),
+            ContractTypeDefinition(
+                key='protection_juridique',
+                name='Protection Juridique',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['protection juridique', 'frais d\'avocat', 'litige', 'défense pénale', 'recours amiable', 'seuil d\'intervention'],
+                legal_codes=['code_assurances'],
+                priority=2
+            ),
+            ContractTypeDefinition(
+                key='assurance_rc_pro',
+                name='Assurance RC Pro',
+                category=ContractCategory.DAILY_INSURANCE,
+                keywords=['responsabilité civile professionnelle', 'rc pro', 'dommages causés aux tiers', 'exploitation', 'faute professionnelle'],
+                legal_codes=['code_assurances'],
+                priority=2
+            ),
+
+        ]
+
+    def _build_legal_database(self) -> Dict[str, List[LegalReference]]:
+        """Build database of legal references"""
         return {
             'loi_89_462': [
                 LegalReference('Loi 89-462', 'Article 1', 'Bail d\'habitation', 
@@ -704,13 +782,42 @@ class ComprehensiveContractDetector:
             ],
             'code_travail_cdi': [
                 LegalReference('Code du Travail', 'L1221-1', 'Contrat de travail',
-                             'Règles applicables au CDI')
+                             'Règles applicables au CDI'),
+                LegalReference('Code du Travail', 'L1231-1', 'Rupture CDI',
+                             'Liberté de rupture du CDI sous conditions (licenciement, démission)')
             ],
             'code_assurances': [
                 LegalReference('Code des Assurances', 'L112-1', 'Contrat d\'assurance',
-                             'Définit les obligations de l\'assureur et de l\'assuré')
+                             'Le contrat doit être rédigé par écrit, en français et en caractères apparents.'),
+                LegalReference('Code des Assurances', 'L113-1', 'Obligations',
+                             'Obligation de payer la prime et de déclarer les risques exacts.'),
+                LegalReference('Code des Assurances', 'L113-2', 'Déclaration',
+                             'L\'assuré doit déclarer tout sinistre de nature à entraîner la garantie.'),
+                LegalReference('Code des Assurances', 'L113-12', 'Résiliation',
+                             'Droit de résiliation annuelle à l\'échéance avec préavis de 2 mois.'),
+                LegalReference('Code des Assurances', 'L113-15-2', 'Loi Hamon',
+                             'Droit de résiliation infra-annuelle après 1 an de contrat (auto/habitation).')
             ],
-            # ... autres références (à compléter)
+            'code_consommation': [
+                LegalReference('Code de la Consommation', 'L221-18', 'Droit de Rétractation',
+                             'Délai de 14 jours pour se rétracter d\'un contrat conclu à distance ou hors établissement.'),
+                LegalReference('Code de la Consommation', 'L217-4', 'Garantie de Conformité',
+                             'Le vendeur doit livrer un bien conforme au contrat et répond des défauts de conformité existant lors de la délivrance (2 ans).'),
+                LegalReference('Code de la Consommation', 'L212-1', 'Clauses Abusives',
+                             'Sont abusives les clauses qui créent un déséquilibre significatif entre les droits et obligations des parties.'),
+                LegalReference('Code de la Consommation', 'L215-1', 'Loi Chatel',
+                             'Le professionnel doit informer le consommateur de la possibilité de ne pas reconduire un contrat tacitement reconductible.'),
+                LegalReference('Code de la Consommation', 'L312-1', 'Loi Scrivener (Crédit)',
+                             'Obligation d\'information précontractuelle et maintien de l\'offre de crédit pendant 15 jours.')
+            ],
+            'code_route': [
+                LegalReference('Code de la Route', 'L211-1', 'Obligation d\'assurance',
+                             'Tout véhicule terrestre à moteur doit être assuré (RC obligatoire).')
+            ],
+            'code_securite_sociale': [
+                LegalReference('Code de la Sécurité Sociale', 'L871-1', 'Contrat Responsable',
+                             'Respect des plafonds et planchers de remboursement pour la fiscalité avantageuse.')
+            ]
         }
     
     def detect_contract_type(self, text: str) -> Tuple[str, float, str, ContractCategory]:
