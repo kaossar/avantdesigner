@@ -33,10 +33,11 @@ class LegalRAGService:
         """Load complete legal knowledge base - 35 articles"""
         logger.info(f"📚 Loading complete legal knowledge base...")
         
-        # Load all knowledge bases
-        self.articles.extend(self._load_markdown_kb("knowledge_base/loi_89_462.md", "Loi 89-462"))
-        self.articles.extend(self._load_markdown_kb("knowledge_base/code_civil.md", "Code Civil"))
-        self.articles.extend(self._load_markdown_kb("knowledge_base/code_travail.md", "Code du Travail"))
+        # Load embedded knowledge base
+        self.articles.extend(self._get_complete_knowledge_base())
+        
+        # Optional: Load from markdown files if method exists (future)
+        # self.articles.extend(self._load_markdown_kb("knowledge_base/loi_89_462.md", "Loi 89-462"))
         
         logger.info(f"✅ Loaded {len(self.articles)} legal articles")
     

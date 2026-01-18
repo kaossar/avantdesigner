@@ -174,10 +174,12 @@ Réponds uniquement en JSON valide.
                         return json.loads(json_str)
                 except:
                     logger.warning("Failed to parse Mistral JSON response")
-            else:
                 logger.warning(f"Mistral API Error: {response.status_code}")
                 
         except Exception as e:
             logger.error(f"Mistral Inference Failed: {e}")
             
         return None
+
+# Global instance
+ai_models = AIModelService()

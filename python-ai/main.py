@@ -143,6 +143,14 @@ async def analyze_file(
         pipeline = ContractAIPipeline()
         result = await pipeline.process(text)
         
+        # Add raw text to response so frontend knows extraction worked
+        result["text"] = text
+        
+        import json
+        # Ensure result is JSON serializable (sometimes float32 from numpy/torch causes issues)
+        # Fast fix: rely on FastAPI's jsonable_encoder or just return dict.
+        # But we need to be carefully with numpy types.
+        
         return result
 
     except HTTPException as he:

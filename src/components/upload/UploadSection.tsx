@@ -49,7 +49,14 @@ export function UploadSection() {
 
             if (!response.ok) {
                 // Determine if it's a server error or just OCR failure
-                throw new Error(data.error || data.details || 'Erreur lors de l\'analyse');
+                // Prefer 'details' (real backend error) over 'error' (generic proxy message)
+                const errorMsg = data.details || data.error || 'Erreur lors de l\'analyse';
+                // Try to parse if it looks like JSON (FastAPI detail)
+                try {
+                    const parsed = JSON.parse(errorMsg);
+                    if (parsed.detail) throw new Error(parsed.detail);
+                } catch { }
+                throw new Error(errorMsg);
             }
 
             // Update state with result
