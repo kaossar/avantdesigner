@@ -1,54 +1,27 @@
-# Logos AvantdeSigner
+# Logos AvantDeSigner
 
-Ce dossier contient les options de logo pour AvantdeSigner.
+Ce dossier contient les assets graphiques officiels de la marque.
 
-## Fichiers
+## Fichiers Officiels
 
-### Option 2 : Loupe Analytique 🔍
-- `logo-option-2-magnifier.png` - Logo complet avec texte
-- `icon-option-2.png` - Icône seule (favicon)
+### 1. Logo Principal (Vertical)
+- **Fichier** : `logo-full-vertical.png`
+- **Usage** : Documents, présentations, marketing, footer.
+- **Description** : Icône "Loupe + ADS Monogramme + Check" avec le texte "AvantDeSigner" en dessous.
 
-**Concept** : Loupe examinant un document avec analyse IA (ligne verte)  
-**Couleurs** : Bleu foncé (#0f172a) + Vert émeraude (#10b981)  
-**Style** : Professionnel, analytique, rassurant
+### 2. Icône Seule
+- **Fichier** : `logo.png` (aussi `icon.png`)
+- **Usage** : Header du site (car le texte est en HTML), Favicon, Avatar réseaux sociaux.
+- **Description** : Le symbole graphique uniquement.
+- **Note** : `icon.png` est une copie identique pour usage par Next.js metadata.
 
-### Option 3 : Checkpoint Innovant ✓
-- `logo-option-3-checkpoint.png` - Logo complet avec texte
-- `icon-option-3.png` - Icône seule (favicon)
+## Charte Graphique
+- **Code Couleur Principal** : Corporate Navy (`#0f172a` approx, basé sur palette projet)
+- **Style** : Géométrique, moderne, vectoriel flat.
+- **Symbolisme** : 
+  - **Loupe** : Analyse, transparence.
+  - **Monogramme ADS** : Identité de marque.
+  - **Check/Plume** : Validation et signature.
 
-**Concept** : Checkmark fusionné avec lettre "A"  
-**Couleurs** : Gradient violet (#7c3aed) → cyan (#06b6d4)  
-**Style** : Moderne, dynamique, innovant
-
-## Recommandation
-
-**Option 3 (Checkpoint)** est recommandée pour :
-- Positionnement moderne et disruptif
-- Mémorabilité et unicité
-- Adaptation parfaite aux petites tailles
-- Message clair : "Validation avant signature"
-
-## Utilisation
-
-Pour intégrer un logo dans l'application :
-
-```tsx
-import Image from 'next/image'
-
-<Image 
-  src="/logos/logo-option-3-checkpoint.png" 
-  alt="AvantdeSigner" 
-  width={200} 
-  height={40}
-/>
-```
-
-Pour le favicon :
-```tsx
-// app/layout.tsx
-export const metadata = {
-  icons: {
-    icon: '/logos/icon-option-3.png',
-  },
-}
-```
+---
+*Généré par AvantDeSigner AI Design Studio*
