@@ -50,6 +50,7 @@ class AnalysisResponse(BaseModel):
     summary: str
     entities: dict
     clauses: list
+    detected_clauses: list = [] # New field for transversal clauses
     risks: list
     score: dict
     recommendations: list

@@ -6,9 +6,7 @@ import logging
 from typing import Dict, List, Any
 
 # Import new professional components
-from preprocessing.cleaner import TextCleaner
-from preprocessing.chunker import SmartChunker
-from ai_models import ai_models  # Sprint 3: Mistral, CamemBERT, BARThez
+from knowledge.contract_detector import contract_detector # Professional Contract Detector
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +17,13 @@ class ContractAIPipeline:
     Pipeline stages:
     1. Text cleaning (professional normalization)
     2. Smart chunking (by clause with context)
-    3. Contract classification
+    3. Contract classification (Comprehensive Rule-Based + Keywords)
     4. Entity extraction (NER)
-    5. Clause-by-clause analysis (LLM)
-    6. Risk detection
-    7. Score calculation
-    8. Recommendations generation
+    5. Transversal Clause Detection (New!)
+    6. Clause-by-clause analysis (LLM)
+    7. Risk detection
+    8. Score calculation
+    9. Recommendations generation
     """
     
     def __init__(self):
@@ -45,18 +44,13 @@ class ContractAIPipeline:
         cleaning_metadata = cleaning_result["metadata"]
         logger.info(f"   → Cleaned: {cleaning_metadata['reduction_percent']}% reduction")
         
-        logger.info("🏷️ Stage 2: Contract classification (CamemBERT)...")
-        # Sprint 3: Use Zero-Shot Classification
-        # Stage 2: Classification using CamemBERT (Zero-Shot)
-        candidate_labels = ["Bail d'habitation", "Contrat de travail", "Contrat de vente", "Contrat de prestation"]
-        classification = ai_models.classify_contract(cleaned_text, candidate_labels)
+        logger.info("🏷️ Stage 2: Contract classification (Comprehensive System)...")
+        # Use the new robust contract detector
+        contract_key, confidence, contract_name, category = contract_detector.detect_contract_type(cleaned_text)
+        contract_type = contract_name
         
-        if classification and classification['scores'][0] > 0.4:
-             contract_type = classification['labels'][0]
-        else:
-             contract_type = self._classify_contract(cleaned_text[:1000]) # Fallback
-             
-        logger.info(f"   → Type: {contract_type}")
+        logger.info(f"   → Type: {contract_type} (Category: {category.value}, Confidence: {confidence:.2f})")
+
         
         # Note: OCR handling is now moved to main.py / ocr_service.py
         # Pipeline receives already extracted text.
@@ -74,7 +68,11 @@ class ContractAIPipeline:
         entities = self._extract_entities(cleaned_text) # Keep regex as baseline
         # Merge logic could go here
         
-        logger.info("📚 Stage 4.5: Initializing RAG service (Semantic)...")
+        logger.info("🧠 Stage 4.5: Transversal Clause Detection...")
+        detected_clauses = contract_detector.detect_transversal_clauses(cleaned_text)
+        logger.info(f"   → {len(detected_clauses)} specific clauses identified (Tacite Reconduction, Penalties, etc.)")
+
+        logger.info("📚 Stage 5: Initializing RAG service (Semantic)...")
         try:
             from rag_service_semantic import get_semantic_rag_service
             self.rag_service = get_semantic_rag_service()
@@ -84,7 +82,7 @@ class ContractAIPipeline:
             from rag_service import get_rag_service
             self.rag_service = get_rag_service()
         
-        logger.info("🧠 Stage 5: Clause analysis (AI + RAG)...")
+        logger.info("🧠 Stage 6: Clause analysis (AI + RAG)...")
         clauses_analysis = []
         for chunk in chunks[:10]:  # Limit to 10 clauses for demo
             logger.info(f"   → Analyzing clause {chunk['clause_number']}/{min(len(chunks), 10)} ({chunk['type']})...")
@@ -98,24 +96,39 @@ class ContractAIPipeline:
             
             clauses_analysis.append(analysis)
         
-        logger.info("⚠️ Stage 6: Risk detection...")
+        logger.info("⚠️ Stage 7: Risk detection...")
         risks = self._detect_risks(clauses_analysis, contract_type)
+        
+        # Add risks from transversal clauses
+        for clause in detected_clauses:
+            if clause['risk_level'] in ['HIGH', 'MEDIUM']:
+                risks.append({
+                    "clause_number": "General",
+                    "clause_type": clause['name'],
+                    "clause_preview": f"Clause détectée : {clause['name']}",
+                    "issue": f"{clause['name']} détectée. {clause['description']}",
+                    "severity": clause['risk_level'].lower(),
+                    "recommendation": "Vérifier les conditions exactes de cette clause."
+                })
+
         logger.info(f"   → {len(risks)} risks detected")
         
-        logger.info("📊 Stage 7: Score calculation...")
+        logger.info("📊 Stage 8: Score calculation...")
         score = self._calculate_score(clauses_analysis, risks)
         
-        logger.info("💡 Stage 8: Recommendations...")
+        logger.info("💡 Stage 9: Recommendations...")
         recommendations = self._generate_recommendations(risks, contract_type)
         
-        logger.info("📄 Stage 9: Summary generation...")
+        logger.info("📄 Stage 10: Summary generation...")
         summary = self._generate_summary(cleaned_text, clauses_analysis)
         
         return {
             "contract_type": contract_type,
+            "contract_category": category.value, # Added category
             "summary": summary,
             "entities": entities,
             "clauses": clauses_analysis,
+            "detected_clauses": detected_clauses, # New field
             "risks": risks,
             "score": score,
             "recommendations": recommendations,
