@@ -103,14 +103,24 @@ export interface AnalysisScore {
     grade?: 'A' | 'B' | 'C' | 'D' | 'F';
 }
 
+export interface DetectedClause {
+    id: string;
+    name: string;
+    risk_level: string; // 'HIGH', 'MEDIUM', 'LOW'
+    description: string;
+    matches: string[];
+}
+
 export interface AnalysisReport {
     documentId?: string;
     contractType: string;
+    contractCategory?: string; // New field
     score: AnalysisScore;
     risks: DetectedRisk[];
     recommendations?: Recommendation[];
     summary: string;
     clauses?: AnalyzedClause[];
+    detected_clauses?: DetectedClause[]; // New field
     entities?: ExtractedEntities;
     metadata?: AnalysisMetadata;
     processedAt?: Date;

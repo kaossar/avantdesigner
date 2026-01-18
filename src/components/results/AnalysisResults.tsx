@@ -33,6 +33,8 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
     };
 
     const contractType = report.contractType || 'Contrat';
+    const contractCategory = report.contractCategory || '';
+    const detectedClauses = report.detected_clauses || [];
     const summary = report.summary || 'Analyse terminée avec succès.';
     const entities = report.entities || { montants: [], dates: [], durees: [] };
     const metadata = {
@@ -181,6 +183,8 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
             <div id="summary" className="scroll-mt-24">
                 <ContractSummary
                     contractType={contractType}
+                    contractCategory={contractCategory}
+                    detectedClauses={detectedClauses}
                     summary={summary}
                     entities={entities}
                     metadata={metadata}
