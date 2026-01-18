@@ -112,7 +112,16 @@ class OCRService:
 
             duration_ms = int((time.time() - start_time) * 1000)
 
-            # 4️⃣ Confidence estimation (simple & stable)
+            # 4️⃣ Post-process and clean OCR text
+            from extraction.ocr_cleaner import ocr_cleaner
+            cleaned_result = ocr_cleaner.clean_text(text)
+            text = cleaned_result['cleaned']  # Use cleaned version
+            
+            # Log improvements if significant
+            if cleaned_result['improvement_score'] > 5:
+                logger.info(f"✨ OCR text improved by {cleaned_result['improvement_score']}%")
+
+            # 5️⃣ Confidence estimation (simple & stable)
             words = text.split()
             # Simple heuristic: longer text = likely improved confidence up to a point
             confidence = min(0.99, 0.6 + (len(words) / 2000))
