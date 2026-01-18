@@ -26,106 +26,61 @@ export function UploadSection() {
         setStep('preview');
         setFile(fileObj);
 
-        // Preview Logic
+        // Preview Image immediately
         if (fileObj.type.startsWith('image/')) {
             setImagePreview(URL.createObjectURL(fileObj));
-            // OCR for images will be handled by backend AI service
-            setExtractedText("Analyse en cours...");
-
-            // Call backend API for image OCR (will be handled by Python AI service)
-            const formData = new FormData();
-            formData.append('file', fileObj);
-
-            try {
-                const response = await fetch('/api/ai-analyze', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    // Special handling for scanned PDFs
-                    if (data.error === 'PDF_SCANNED' || data.message?.includes('PDF_SCANNED')) {
-                        setExtractedText(''); // Clear text
-                        setIsProcessing(false);
-                        // Show scanned PDF warning (handled by DocumentPreview)
-                        return;
-                    }
-
-                    throw new Error(data.error || 'Erreur lors de l\'analyse');
-                }
-
-                setExtractedText(data.text);
-
-                if (data.data) {
-                    setAnalysisReport(data.data);
-                    if (autoProceed) {
-                        setStep('results');
-                    }
-                }
-            } catch (error) {
-                console.error("API Analysis Error:", error);
-                let msg = "Erreur: Impossible d'extraire le texte.";
-                if (error instanceof Error) {
-                    msg = `Erreur: ${error.message}`;
-                }
-                setExtractedText(msg);
-            }
-        } else {
-            // Server-side extraction for PDF/DOCX - JUST EXTRACTION first (simulated for preview)
-            // In Phase 5 we merged everything in /api/analyze. 
-            // So calling /api/analyze actually does FULL analysis.
-            // Let's call it and store the result but only show preview first.
-
-            const formData = new FormData();
-            formData.append('file', fileObj);
-
-            try {
-                const response = await fetch('/api/ai-analyze', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const responseText = await response.text();
-                let data;
-                try {
-                    data = JSON.parse(responseText);
-                } catch (e) {
-                    console.error("Invalid JSON response:", responseText.slice(0, 200));
-                    throw new Error("Erreur serveur (Le serveur a renvoyé une page HTML invalide via PDF Parse).");
-                }
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Erreur lors de l\'analyse');
-                }
-
-                setExtractedText(data.text);
-
-                // If the API returns the full report (Phase 6), store it
-                if (data.data) {
-                    setAnalysisReport(data.data);
-
-                    // Direct jump to results if auto-proceed is requested (User Request for Paste Text)
-                    if (autoProceed) {
-                        setStep('results');
-                    }
-                }
-
-                console.log("Analysis success:", data);
-            } catch (error) {
-                console.error("API Analysis Error:", error);
-
-                // Keep the error message visible in the extracted text area so user sees it in Preview
-                let msg = "Erreur: Impossible d'extraire le texte.";
-                if (error instanceof Error) {
-                    msg = `Erreur: ${error.message}`;
-                }
-                setExtractedText(msg);
-            }
         }
 
-        setIsProcessing(false);
+        try {
+            setExtractedText("Analyse et extraction en cours...");
+
+            const formData = new FormData();
+            formData.append('file', fileObj);
+            formData.append('contract_type', 'auto');
+
+            // Use the robust file analysis endpoint
+            // It handles Native PDF, Scanned PDF (OCR), and Images
+            const response = await fetch('/api/ai-upload-analyze', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Determine if it's a server error or just OCR failure
+                throw new Error(data.error || data.details || 'Erreur lors de l\'analyse');
+            }
+
+            // Update state with result
+            const textResult = data.text || "Texte extrait.";
+            setExtractedText(textResult);
+
+            if (data.data || data) {
+                // Store the report
+                setAnalysisReport(data.data || data);
+
+                // Auto-proceed if requested (or we can just wait for user to click 'Audit')
+                if (autoProceed) {
+                    setTimeout(() => setStep('results'), 500);
+                }
+            }
+
+        } catch (error) {
+            console.error('Processing error:', error);
+            let msg = "Erreur lors de l'analyse du fichier.";
+            if (error instanceof Error) {
+                if (error.message.includes('Failed to fetch')) {
+                    msg = "Le serveur ne répond pas (Délai dépassé ou Démarrage en cours). Veuillez réessayez dans 30 secondes.";
+                } else {
+                    msg = `Erreur: ${error.message}`;
+                }
+            }
+            setExtractedText(msg);
+            // Don't show alert if we display the error in the text area
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const processCameraCapture = async (base64Image: string) => {

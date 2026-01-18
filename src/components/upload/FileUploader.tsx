@@ -14,7 +14,11 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
     const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
         if (fileRejections.length > 0) {
             setIsDragReject(true);
-            setTimeout(() => setIsDragReject(false), 2000);
+            setTimeout(() => setIsDragReject(false), 3000);
+
+            // Log rejection reason for debugging/toast (optional)
+            console.log('File Rejected:', fileRejections[0].errors);
+
             return;
         }
 
@@ -33,7 +37,8 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
             'image/png': ['.png']
         },
         maxFiles: 1,
-        multiple: false
+        multiple: false,
+        maxSize: 52428800 // 50MB
     });
 
     return (
@@ -85,7 +90,7 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
                 <p className="text-slate-500 text-sm mb-6 max-w-sm">
                     Supporte PDF, Word, TXT, Images (Scan/Photo).
                     <br />
-                    Taille maximale : 10 Mo.
+                    Taille maximale : 50 Mo.
                 </p>
 
                 <button className="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-bold text-sm uppercase tracking-wider rounded-lg shadow-sm group-hover:border-primary-400 group-hover:text-primary-900 transition-colors">
@@ -110,10 +115,13 @@ export function FileUploader({ onFileSelected }: FileUploaderProps) {
                         exit={{ opacity: 0 }}
                         className="mt-4 p-3 bg-red-50 text-red-600 text-sm font-medium rounded-lg border border-red-100 text-center"
                     >
-                        Format de fichier non supporté. Veuillez utiliser PDF, Word ou Image.
+                        Fichier non supporté ou trop volumineux (&gt;50Mo).
+                        <br />
+                        Formats: PDF, Word, Image.
                     </motion.div>
                 )}
             </AnimatePresence>
+
         </div>
     );
 }

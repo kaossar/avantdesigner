@@ -105,10 +105,17 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
         alert('Partage - Fonctionnalité à venir');
     };
 
+    const scrollToSection = (id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
     return (
-        <div className="w-full space-y-8 animate-fadeIn">
+        <div className="w-full space-y-8 animate-fadeIn relative">
             {/* Header with Actions */}
-            <div className="flex items-center justify-between print:hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
                 <div>
                     <h1 className="text-3xl font-bold text-primary-900">
                         Analyse Expert IA
@@ -117,7 +124,7 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
                         Résultats détaillés de l'analyse de votre contrat
                     </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-wrap">
                     <Button variant="ghost" onClick={onReset}>
                         <ArrowLeft size={16} className="mr-2" />
                         Nouvelle analyse
@@ -142,30 +149,61 @@ export function AnalysisResults({ report, onReset }: AnalysisResultsProps) {
                 </div>
             </div>
 
+            {/* Sticky Navigation */}
+            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200 -mx-4 px-4 py-2 overflow-x-auto print:hidden">
+                <div className="flex gap-2 min-w-max">
+                    <button onClick={() => scrollToSection('score')} className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+                        📊 Score
+                    </button>
+                    <button onClick={() => scrollToSection('summary')} className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+                        📝 Résumé
+                    </button>
+                    <button onClick={() => scrollToSection('risks')} className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+                        ⚠️ Risques ({score.details.high_risks + score.details.medium_risks})
+                    </button>
+                    <button onClick={() => scrollToSection('clauses')} className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+                        🔍 Clauses ({score.details.total_clauses})
+                    </button>
+                    {report.recommendations && report.recommendations.length > 0 && (
+                        <button onClick={() => scrollToSection('recommendations')} className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+                            💡 Conseils
+                        </button>
+                    )}
+                </div>
+            </div>
+
             {/* Score Card */}
-            <ScoreCard score={score} />
+            <div id="score" className="scroll-mt-24">
+                <ScoreCard score={score} />
+            </div>
 
             {/* Contract Summary */}
-            <ContractSummary
-                contractType={contractType}
-                summary={summary}
-                entities={entities}
-                metadata={metadata}
-            />
+            <div id="summary" className="scroll-mt-24">
+                <ContractSummary
+                    contractType={contractType}
+                    summary={summary}
+                    entities={entities}
+                    metadata={metadata}
+                />
+            </div>
 
             {/* Risk Summary */}
             {report.risks && report.risks.length > 0 && (
-                <RiskSummary risks={report.risks} />
+                <div id="risks" className="scroll-mt-24">
+                    <RiskSummary risks={report.risks} />
+                </div>
             )}
 
             {/* Clause by Clause Analysis */}
             {report.clauses && report.clauses.length > 0 && (
-                <ClauseByClauseView clauses={report.clauses} />
+                <div id="clauses" className="scroll-mt-24">
+                    <ClauseByClauseView clauses={report.clauses} />
+                </div>
             )}
 
             {/* Recommendations */}
             {report.recommendations && report.recommendations.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+                <div id="recommendations" className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 scroll-mt-24">
                     <h2 className="text-2xl font-bold text-primary-900 mb-6">
                         Recommandations IA
                     </h2>

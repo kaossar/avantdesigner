@@ -2,11 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
+    const pathname = usePathname();
+    const isHome = pathname === '/';
+
+    // Show solid header if scrolled OR if not on home page
+    const shouldShowSolid = isScrolled || !isHome;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -20,7 +26,7 @@ export function Header() {
         <header
             className={cn(
                 "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 border-b",
-                isScrolled
+                shouldShowSolid
                     ? "bg-white/90 backdrop-blur-md border-neutral-200 shadow-sm"
                     : "bg-transparent border-transparent"
             )}
@@ -31,12 +37,12 @@ export function Header() {
                     <Link href="/" className="flex items-center space-x-2 group">
                         <div className={cn(
                             "flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300",
-                            isScrolled ? "bg-primary-900" : "bg-white/20 backdrop-blur-sm group-hover:bg-white/30"
+                            shouldShowSolid ? "bg-primary-900" : "bg-white/20 backdrop-blur-sm group-hover:bg-white/30"
                         )}>
                             <svg
                                 className={cn(
                                     "w-6 h-6 transition-colors duration-300",
-                                    isScrolled ? "text-white" : "text-white"
+                                    shouldShowSolid ? "text-white" : "text-white"
                                 )}
                                 fill="none"
                                 strokeLinecap="round"
@@ -50,7 +56,7 @@ export function Header() {
                         </div>
                         <span className={cn(
                             "text-xl font-bold font-display transition-colors duration-300",
-                            isScrolled ? "text-slate-900" : "text-white"
+                            shouldShowSolid ? "text-slate-900" : "text-white"
                         )}>
                             AvantDeSigner
                         </span>
@@ -64,7 +70,7 @@ export function Header() {
                                 href={`/#${item.toLowerCase().replace(/ /g, '-').replace('ç', 'c')}`}
                                 className={cn(
                                     "text-sm font-medium transition-colors tracking-wide hover:text-primary-500",
-                                    isScrolled ? "text-slate-600" : "text-white/90 hover:text-white"
+                                    shouldShowSolid ? "text-slate-600" : "text-white/90 hover:text-white"
                                 )}
                             >
                                 {item}
@@ -78,7 +84,8 @@ export function Header() {
                             href="/login"
                             className={cn(
                                 "text-sm font-bold transition-colors hover:text-primary-500",
-                                isScrolled ? "text-slate-700" : "text-white hover:text-white"
+                                "hidden sm:block", // Hide on mobile if space is tight
+                                shouldShowSolid ? "text-slate-700" : "text-white hover:text-white"
                             )}
                         >
                             Connexion
@@ -86,7 +93,7 @@ export function Header() {
                         <Link href="/analyser">
                             <Button
                                 size="md"
-                                // Hardcoded dark background to absolutely guarantee visibility against white header
+                                // Keep button consistently visible/styled
                                 className="bg-[#0f172a] hover:bg-[#1e293b] text-white border-none font-bold shadow-lg shadow-primary-900/20"
                             >
                                 Vérifier un contrat
