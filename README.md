@@ -70,39 +70,78 @@ avantdesigner/
 
 ```
 
-## 🛠️ Installation
+## 🛠️ Installation & Démarrage (Complet)
 
-```bash
-# Cloner le projet
-cd d:\sources\avantdesigner
+### Pré-requis
+1. **Node.js**: v18+ (pour le Frontend)
+2. **Python**: v3.12 (x64) **Obligatoire** (pour le Backend IA). 
+   - ⚠️ Ne pas utiliser la version ARM64. Installez la version "Windows installer (64-bit)".
 
-# Installer les dépendances
+---
+
+### 1. Installation du Backend (Python / IA)
+
+Nous utilisons **Poetry** pour gérer les dépendances Python de manière robuste.
+
+```powershell
+# Aller dans le dossier backend
+cd python-ai
+
+# 1. Installer Poetry (si pas déjà fait)
+py -3.12 -m pip install poetry
+
+# 2. Configurer Poetry pour créer le venv dans le dossier projet (recommandé)
+py -3.12 -m poetry config virtualenvs.in-project true --local
+
+# 3. Installer toutes les dépendances (Torch, EasyOCR, FastAPI...)
+# Cela va créer un dossier .venv propre et tout installer dedans.
+py -3.12 -m poetry install
+```
+
+### 2. Installation du Frontend (Node.js)
+
+```powershell
+# Aller dans le dossier racine
+cd .. 
+
+# Installer les dépendances JS
 npm install
 
 # Configurer les variables d'environnement
 cp .env.local.example .env.local
-# Éditer .env.local avec vos clés API
+# (Pensez à éditer .env.local avec vos clés API)
 
-# Initialiser la base de données
+# Initialiser la base de données (si nécessaire)
 npx prisma generate
 npx prisma db push
+```
 
-# Lancer le serveur de développement
+---
+
+## 🚀 Lancement Quotidien (Dev)
+
+Il faut lancer **deux terminaux** séparés en parallèle :
+
+#### Terminal A : Backend IA 🧠
+*(Port 8000)*
+```powershell
+cd python-ai
+# Lancer le serveur via Poetry (utilise le venv isolé automatiquement)
+py -3.12 -m poetry run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+#### Terminal B : Frontend Web 💻
+*(Port 3000)*
+```powershell
+# (À la racine du projet)
 npm run dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000)
+Application accessible sur : [http://localhost:3000](http://localhost:3000)
+
+---
 
 ## 📝 Scripts Disponibles
-
-```bash
-npm run dev          # Serveur de développement
-npm run build        # Build de production
-npm run start        # Serveur de production
-npm run lint         # Linter ESLint
-npm run format       # Formatter Prettier
-npm run type-check   # Vérification TypeScript
-```
 
 ## 🧪 Tests
 
