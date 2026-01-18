@@ -37,23 +37,16 @@ export function Header() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2 group">
                         <div className={cn(
-                            "flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300",
-                            shouldShowSolid ? "bg-primary-900" : "bg-white/20 backdrop-blur-sm group-hover:bg-white/30"
+                            "flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300 relative",
+                            shouldShowSolid ? "bg-transparent" : "bg-white/20 backdrop-blur-sm group-hover:bg-white/30"
                         )}>
-                            <svg
-                                className={cn(
-                                    "w-6 h-6 transition-colors duration-300",
-                                    shouldShowSolid ? "text-white" : "text-white"
-                                )}
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <Image
+                                src="/logos/logo.png"
+                                alt="Logo"
+                                fill
+                                className="object-contain p-1"
+                                priority
+                            />
                         </div>
                         <span className={cn(
                             "text-xl font-bold font-display transition-colors duration-300",
@@ -102,7 +95,7 @@ export function Header() {
                         </Link>
                     </div>
                 </div>
-            </div>
-        </header>
+            </div >
+        </header >
     );
 }
