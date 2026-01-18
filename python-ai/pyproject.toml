@@ -22,7 +22,9 @@ dependencies = [
     "langchain",
     "transformers",
     # "faiss-cpu", # Often problematic on Windows, enable if needed later
-    "accelerate"
+    "accelerate",
+    "pytesseract (>=0.3.13,<0.4.0)",
+    "pillow (>=12.1.0,<13.0.0)"
 ]
 
 [build-system]

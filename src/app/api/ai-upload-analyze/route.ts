@@ -6,12 +6,24 @@ export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
 
-        // Forward to Python Service
+        console.log('🔵 [Next.js Route] Forwarding request to Python backend...');
+
+        // Forward to Python Service with extended timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes
+
         const response = await fetch(`${AI_SERVICE_URL}/analyze-file`, {
             method: 'POST',
             body: formData,
-            // Header is auto-managed for FormData in fetch
+            signal: controller.signal,
+            // @ts-ignore - Undici-specific options
+            headersTimeout: 60000, // 60 seconds for headers
+            bodyTimeout: 300000,   // 5 minutes for body
         });
+
+        clearTimeout(timeoutId);
+
+        console.log('🟢 [Next.js Route] Received response from Python:', response.status, response.headers.get('content-type'));
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -21,8 +33,16 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const result = await response.json();
-        return NextResponse.json(result);
+        // Return the stream directly to the client
+        // This enables real-time progress updates (NDJSON)
+        return new Response(response.body, {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/x-ndjson',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+            },
+        });
 
     } catch (error) {
         console.error('Upload Error:', error);
@@ -36,8 +56,4 @@ export async function POST(request: NextRequest) {
 // Allow up to 5 minutes for analysis (OCR Model Download + Processing)
 export const maxDuration = 300;
 
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
+

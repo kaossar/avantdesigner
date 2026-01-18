@@ -20,18 +20,39 @@ export function DocumentPreview({
 }: DocumentPreviewProps) {
     if (isScanning) {
         return (
-            <div className="flex flex-col items-center justify-center py-20">
-                <div className="relative w-24 h-24 mb-8">
+            <div className="flex flex-col items-center justify-center py-10 w-full animate-in fade-in zoom-in duration-300">
+                <div className="relative w-20 h-20 mb-6">
                     <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
                     <div className="absolute inset-0 border-4 border-primary-600 rounded-full border-t-transparent animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-primary-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                        <span className="text-2xl">🤖</span>
                     </div>
                 </div>
-                <h3 className="text-xl font-serif font-bold text-primary-900 mb-2 animate-pulse">Lecture en cours...</h3>
-                <p className="text-slate-500">Notre IA déchiffre votre document.</p>
+                <h3 className="text-xl font-serif font-bold text-primary-900 mb-2 animate-pulse">Analyse en cours...</h3>
+
+                {/* Real-time Logs Display */}
+                <div className="w-full max-w-2xl mt-8 bg-slate-900 rounded-lg p-6 font-mono text-sm shadow-xl border border-slate-700">
+                    <div className="flex items-center gap-2 text-slate-400 mb-4 border-b border-slate-700 pb-2">
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span className="uppercase text-xs tracking-widest">Console d'activité IA</span>
+                    </div>
+                    <div className="space-y-2 max-h-[200px] overflow-y-auto overflow-x-hidden">
+                        {extractedText ? (
+                            extractedText.split('\n').map((line, i) => (
+                                <div key={i} className="text-emerald-400 flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                    <span className="text-slate-600 select-none">{'>'}</span>
+                                    <span>{line}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <span className="text-slate-500 italic">Démarrage du flux...</span>
+                        )}
+                        {/* Auto-scroll anchor */}
+                        <div style={{ float: "left", clear: "both" }}></div>
+                    </div>
+                </div>
+
+                <p className="text-slate-500 mt-6 text-sm">Ne fermez pas cette page.</p>
             </div>
         );
     }

@@ -100,64 +100,107 @@ from fastapi import UploadFile, File, Form
 from extraction.ocr_service import ocr_service
 import fitz # PyMuPDF
 
+from fastapi.responses import StreamingResponse
+import json
+
+async def analysis_stream_generator(file_obj, contents, contract_type):
+    """
+    Orchestrates the streaming process:
+    1. OCR/Text Extraction (Yields progress)
+    2. AI Analysis (Yields output)
+    """
+    text = ""
+    ocr_mode = False
+    
+    # CRITICAL: Yield immediately to start streaming
+    yield json.dumps({"type": "info", "message": "Connexion établie. Lecture du fichier..."}) + "\n"
+    
+    # Read file content inside generator (non-blocking for HTTP headers)
+    if contents is None:
+        contents = await file_obj.read()
+    
+    yield json.dumps({"type": "info", "message": "Fichier chargé. Analyse en cours..."}) + "\n"
+    
+    # 1. Determine Extraction Method
+    if file_obj.content_type == "application/pdf":
+        # Check if native
+        try:
+            is_native = False
+            with fitz.open(stream=contents, filetype="pdf") as doc:
+                # heuristic: check first page text
+                if len(doc) > 0 and len(doc[0].get_text().strip()) > 50:
+                    is_native = True
+                
+            if is_native:
+                yield json.dumps({"type": "info", "message": "PDF natif détecté (Extraction rapide)..."}) + "\n"
+                with fitz.open(stream=contents, filetype="pdf") as doc:
+                    for page in doc:
+                        text += page.get_text() + "\n"
+                yield json.dumps({"type": "ocr_complete", "full_text": text, "message": "Extraction terminée."}) + "\n"
+            else:
+                ocr_mode = True
+        except:
+             ocr_mode = True
+    else:
+        ocr_mode = True
+        
+    # 2. Run OCR if needed
+    if ocr_mode:
+        yield json.dumps({"type": "info", "message": "Scan détecté. Démarrage OCR..."}) + "\n"
+        if file_obj.content_type == "application/pdf":
+            # Stream from OCR Service
+            async for event in ocr_service.process_scanned_pdf_stream(contents):
+                if event["type"] == "ocr_complete":
+                    text = event["full_text"]
+                yield json.dumps(event) + "\n"
+        else:
+            # Image OCR (Simple for now, can be streamed if needed)
+            yield json.dumps({"type": "page_start", "page": 1, "message": "Traitement image..."}) + "\n"
+            text = ocr_service.extract_text_from_image(contents)
+            yield json.dumps({"type": "ocr_complete", "full_text": text, "message": "Image analysée."}) + "\n"
+
+    if not text.strip():
+        yield json.dumps({"type": "error", "error": "Aucun texte extrait du fichier."}) + "\n"
+        return
+
+    # 3. AI Analysis Pipeline
+    yield json.dumps({"type": "stage", "stage": "analysis", "message": "Analyse juridique et détection des risques..."}) + "\n"
+    
+    try:
+        from pipeline import ContractAIPipeline
+        pipeline = ContractAIPipeline()
+        result = await pipeline.process(text)
+        
+        # Add raw text for frontend
+        result["text"] = text
+        
+        yield json.dumps({"type": "complete", "data": result}) + "\n"
+        
+    except Exception as e:
+        logger.error(f"Analysis Pipeline Failed: {e}")
+        yield json.dumps({"type": "error", "error": f"Erreur analyse IA: {str(e)}"}) + "\n"
+
+
 @app.post("/analyze-file")
 async def analyze_file(
     file: UploadFile = File(...),
     contract_type: str = Form("auto")
 ):
     """
-    Handle file upload with Server-Side OCR (Legal Grade)
-    Supports: PDF (Native & Scanned), Images
+    Handle file upload with Server-Side Streaming (NDJSON)
     """
     try:
-        logger.info(f"📂 Receiving file: {file.filename} ({file.content_type})")
-        contents = await file.read()
+        logger.info(f"📂 Streaming Request: {file.filename}")
         
-        text = ""
-        
-        # 1. Try Native Extraction (PDF)
-        if file.content_type == "application/pdf":
-            try:
-                with fitz.open(stream=contents, filetype="pdf") as doc:
-                    for page in doc:
-                        text += page.get_text() + "\n"
-            except Exception as e:
-                logger.warning(f"Native PDF extraction failed: {e}")
-        
-        # 2. OCR Fallback (if text empty or Image)
-        if len(text.strip()) < 50 or file.content_type.startswith("image/"):
-            logger.info("🕵️ Triggering Legal-Grade OCR (EasyOCR)...")
-            ocr_result = ocr_service.process_scanned_pdf(contents) if file.content_type == "application/pdf" else {"text": ocr_service.extract_text_from_image(contents)}
+        # Return StreamingResponse immediately (don't await file.read() here!)
+        return StreamingResponse(
+            analysis_stream_generator(file, None, contract_type),
+            media_type="application/x-ndjson"
+        )
             
-            if ocr_result.get("error"):
-                 raise HTTPException(status_code=400, detail=f"OCR Failed: {ocr_result['error']}")
-            
-            text = ocr_result["text"]
-            logger.info(f"✅ OCR complete. Extracted {len(text)} chars.")
-
-        if not text.strip():
-            raise HTTPException(status_code=400, detail="Could not extract text from file.")
-
-        # 3. Run Pipeline
-        from pipeline import ContractAIPipeline
-        pipeline = ContractAIPipeline()
-        result = await pipeline.process(text)
-        
-        # Add raw text to response so frontend knows extraction worked
-        result["text"] = text
-        
-        import json
-        # Ensure result is JSON serializable (sometimes float32 from numpy/torch causes issues)
-        # Fast fix: rely on FastAPI's jsonable_encoder or just return dict.
-        # But we need to be carefully with numpy types.
-        
-        return result
-
-    except HTTPException as he:
-        raise he
     except Exception as e:
-        logger.error(f"❌ File analysis failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"File analysis failed: {str(e)}")
+        logger.error(f"❌ Initialization failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Init failed: {str(e)}")
 
 @app.post("/export-pdf")
 async def export_pdf(analysis_data: dict):

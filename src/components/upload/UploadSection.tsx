@@ -32,59 +32,125 @@ export function UploadSection() {
         }
 
         try {
-            setExtractedText("Analyse et extraction en cours...");
+            setExtractedText("Connexion au serveur...");
 
             const formData = new FormData();
             formData.append('file', fileObj);
             formData.append('contract_type', 'auto');
 
-            // Use the robust file analysis endpoint
-            // It handles Native PDF, Scanned PDF (OCR), and Images
             const response = await fetch('/api/ai-upload-analyze', {
                 method: 'POST',
                 body: formData,
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                // Determine if it's a server error or just OCR failure
-                // Prefer 'details' (real backend error) over 'error' (generic proxy message)
-                const errorMsg = data.details || data.error || 'Erreur lors de l\'analyse';
-                // Try to parse if it looks like JSON (FastAPI detail)
-                try {
-                    const parsed = JSON.parse(errorMsg);
-                    if (parsed.detail) throw new Error(parsed.detail);
-                } catch { }
-                throw new Error(errorMsg);
+                throw new Error(`Erreur serveur: ${response.status}`);
             }
 
-            // Update state with result
-            const textResult = data.text || "Texte extrait.";
-            setExtractedText(textResult);
+            if (!response.body) throw new Error("Réponse vide du serveur");
 
-            if (data.data || data) {
-                // Store the report
-                setAnalysisReport(data.data || data);
+            // Streaming Reader Logic
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            let finalResult = null;
+            let fullTextLog = "";
 
-                // Auto-proceed if requested (or we can just wait for user to click 'Audit')
-                if (autoProceed) {
-                    setTimeout(() => setStep('results'), 500);
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                // Improved Split (handles \r\n from Windows backend)
+                const lines = buffer.split(/\r?\n/);
+                buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+                for (let line of lines) {
+                    line = line.trim();
+                    if (!line) continue;
+
+                    // Robust helper to handle concatenated JSONs (e.g. obj1}{obj2) if backend flush misses \n
+                    const fixConcatenated = (str: string) => {
+                        if (str.includes('}{')) {
+                            return str.replace(/}{/g, '}\n{').split('\n');
+                        }
+                        return [str];
+                    };
+
+                    const parts = fixConcatenated(line);
+
+                    for (const part of parts) {
+                        try {
+                            const msg = JSON.parse(part);
+
+                            switch (msg.type) {
+                                case 'init':
+                                    setExtractedText(msg.message);
+                                    break;
+                                case 'page_start':
+                                    setExtractedText(current => `${current}\n⏳ ${msg.message}`);
+                                    break;
+                                case 'page_done':
+                                    setExtractedText(current => `${current} ✅ (Terminé)\n`);
+                                    break;
+                                case 'ocr_warning':
+                                case 'page_warning':
+                                    setExtractedText(current => `${current} ⚠️ ${msg.message}\n`);
+                                    break;
+                                case 'ocr_complete':
+                                    fullTextLog = msg.full_text; // Keep text separately
+                                    setExtractedText(current => `${current}\n✅ OCR Terminé. Analyse IA en cours...`);
+                                    break;
+                                case 'info':
+                                case 'stage':
+                                    setExtractedText(current => `${current}\nℹ️ ${msg.message}`);
+                                    break;
+                                case 'complete':
+                                    finalResult = msg.data;
+                                    break;
+                                case 'error':
+                                    throw new Error(msg.error);
+                            }
+                        } catch (err) {
+                            console.error("❌ Error parsing stream part:", part, err);
+                            console.error("   Original line was:", line);
+                            // Don't throw - continue processing other messages
+                        }
+                    }
                 }
+            }
+
+            if (finalResult) {
+                const data = finalResult;
+
+                // Keep the full OCR text visible (don't replace with summary)
+                if (fullTextLog && fullTextLog.trim()) {
+                    setExtractedText(fullTextLog); // Show complete OCR text
+                } else if (data.text) {
+                    setExtractedText(data.text);
+                }
+
+                if (data.data || data) {
+                    setAnalysisReport(data.data || data);
+                    if (autoProceed) {
+                        setTimeout(() => setStep('results'), 500);
+                    }
+                }
+            } else {
+                if (!fullTextLog) throw new Error("L'analyse s'est terminée sans résultat.");
             }
 
         } catch (error) {
             console.error('Processing error:', error);
             let msg = "Erreur lors de l'analyse du fichier.";
             if (error instanceof Error) {
-                if (error.message.includes('Failed to fetch')) {
-                    msg = "Le serveur ne répond pas (Délai dépassé ou Démarrage en cours). Veuillez réessayez dans 30 secondes.";
+                if (error.message.includes('fetch')) {
+                    msg = "Le serveur ne répond pas. Vérifiez la connexion.";
                 } else {
                     msg = `Erreur: ${error.message}`;
                 }
             }
             setExtractedText(msg);
-            // Don't show alert if we display the error in the text area
         } finally {
             setIsProcessing(false);
         }
@@ -119,22 +185,9 @@ export function UploadSection() {
         if (analysisReport) {
             setStep('results');
         } else if (file) {
-            // Already handled by processFile called in onFileSelected, 
-            // but if user went back or something, we might need logic.
-            // Currently processFile does everything. 
-            // This button in DocumentPreview is for "Lancer l'audit".
-            // If file exists, we probably already have the report OR we need to fetch it?
-            // Actually, processFile calls API.
-            // If API succeeded, 'analysisReport' is set. 
-            // So if we are here and 'analysisReport' is null, that means processFile failed or didn't run?
-            // OR processFile only did extraction? (In current logic it does full analysis).
-
-            // Re-run processFile to be safe or just show processing
             alert("Réanalyse en cours...");
             processFile(file, true);
         } else if (extractedText) {
-            // Case: Camera Scan or Manual Text (if logic separated)
-            // We have text but no file object. We must submit this text as a file.
             handleTextSubmit(extractedText);
         }
     };

@@ -1,0 +1,285 @@
+{
+  "contract_type": "Bail d'habitation",
+  "summary": "Contrat analysé avec 7 clauses identifiées. Aucun risque majeur détecté.",
+  "entities": {
+    "montants": [
+      "1200"
+    ],
+    "dates": [],
+    "durees": [
+      "3"
+    ]
+  },
+  "clauses": [
+    {
+      "clause_number": 1,
+      "clause_text": "Article 1  - Objet\nLe bailleur loue au locataire un appartement de 50m² situé au 10 rue de la Paix, 75001 Paris.\n\n",
+      "full_text": "Article 1  - Objet\nLe bailleur loue au locataire un appartement de 50m² situé au 10 rue de la Paix, 75001 Paris.\n\n",
+      "clause_type": "general",
+      "context": "[Contrat: Bail d'habitation, Clause 1, Type: general]",
+      "resume": "Clause 1 - General",
+      "implications": "Cette clause établit les droits et obligations des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Code Civil",
+          "article": "Article 1728",
+          "title": "Obligations du locataire",
+          "summary": "Le preneur doit : 1) User en bon père de famille (usage normal, entretien, pas de dégradations), 2) Payer le loyer et charges aux dates convenues....",
+          "relevance": "60.1%"
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 1",
+          "title": "Champ d'application",
+          "summary": "La présente loi s'applique aux locations de locaux à usage d'habitation ou à usage mixte professionnel et d'habitation. Ne s'applique pas aux location...",
+          "relevance": "58.9%"
+        }
+      ],
+      "legal_context": "Selon Code Civil Article 1728 (Obligations du locataire): Le preneur doit : 1) User en bon père de famille (usage normal, entretien, pas de dégradations), 2) Payer le loyer et charges aux dates convenues....",
+      "search_method": "semantic"
+    },
+    {
+      "clause_number": 2,
+      "clause_text": "Article 2  - Durée\nLe bail est conclu pour une durée de 3 ans à compter du 1er janvier 2024.\n\n",
+      "full_text": "Article 2  - Durée\nLe bail est conclu pour une durée de 3 ans à compter du 1er janvier 2024.\n\n",
+      "clause_type": "duration",
+      "context": "[Contrat: Bail d'habitation, Clause 2, Type: duration]",
+      "resume": "Clause 2 - Duration",
+      "implications": "Cette clause fixe la durée d'engagement.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 3",
+          "title": "Durée du bail",
+          "summary": "Le contrat de location est conclu pour une durée minimale de trois ans (personne physique) ou six ans (personne morale). Renouvellement tacite sauf co...",
+          "relevance": "79.6%"
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 3-1",
+          "title": "Bail mobilité",
+          "summary": "Bail de 1 à 10 mois pour mobilité professionnelle, formation, études. Pas de dépôt de garantie, préavis d'un mois, pas de tacite reconduction....",
+          "relevance": "65.0%"
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 3 (Durée du bail): Le contrat de location est conclu pour une durée minimale de trois ans (personne physique) ou six ans (personne morale). Renouvellement tacite sauf congé....",
+      "search_method": "semantic"
+    },
+    {
+      "clause_number": 3,
+      "clause_text": "Article 3  - Loyer\nLe loyer mensuel est fixé à 1200 euros, charges comprises.\nLe loyer sera payable le 1er de chaque mois.\n\n",
+      "full_text": "Article 3  - Loyer\nLe loyer mensuel est fixé à 1200 euros, charges comprises.\nLe loyer sera payable le 1er de chaque mois.\n\n",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 3, Type: financial]",
+      "resume": "Clause 3 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "⚡ Clause nécessitant une vérification approfondie.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟡 Demander une clarification ou modification",
+      "risk_level": "medium",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 7",
+          "title": "Loyer",
+          "summary": "Le loyer est fixé librement à la conclusion. Révision annuelle possible selon l'IRL. Encadrement possible dans zones tendues....",
+          "relevance": "72.0%"
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 22",
+          "title": "Dépôt de garantie",
+          "summary": "Maximum 1 mois de loyer (vide) ou 2 mois (meublé). Restitution sous 2 mois (1 mois si état des lieux conforme). Dépôt supérieur = abusif....",
+          "relevance": "68.1%"
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 7 (Loyer): Le loyer est fixé librement à la conclusion. Révision annuelle possible selon l'IRL. Encadrement possible dans zones tendues....",
+      "search_method": "semantic"
+    },
+    {
+      "clause_number": 4,
+      "clause_text": "Article 4  - Dépôt de garantie\nUn dépôt de garantie d'un montant de 1200 euros est versé à la signature du bail.\n\n",
+      "full_text": "Article 4  - Dépôt de garantie\nUn dépôt de garantie d'un montant de 1200 euros est versé à la signature du bail.\n\n",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 4, Type: financial]",
+      "resume": "Clause 4 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Code Civil",
+          "article": "Article 1231-5",
+          "title": "Clause pénale",
+          "summary": "Clause pénale : somme fixée en cas de manquement. Le juge peut modérer si manifestement excessive ou dérisoire. Exemple : 100€/jour pour retard = exce...",
+          "relevance": "66.0%"
+        },
+        {
+          "source": "Code Civil",
+          "article": "Article 1721",
+          "title": "Garantie des troubles",
+          "summary": "Le bailleur garantit le preneur contre tous troubles et empêchements à sa jouissance. Protection contre travaux excessifs, nuisances....",
+          "relevance": "50.8%"
+        }
+      ],
+      "legal_context": "Selon Code Civil Article 1231-5 (Clause pénale): Clause pénale : somme fixée en cas de manquement. Le juge peut modérer si manifestement excessive ou dérisoire. Exemple : 100€/jour pour retard = excessif et réductible....",
+      "search_method": "semantic"
+    },
+    {
+      "clause_number": 5,
+      "clause_text": "Article 5  - Préavis\nLe locataire peut résilier le bail à tout moment avec un préavis de 3 mois.\n\n",
+      "full_text": "Article 5  - Préavis\nLe locataire peut résilier le bail à tout moment avec un préavis de 3 mois.\n\n",
+      "clause_type": "duration",
+      "context": "[Contrat: Bail d'habitation, Clause 5, Type: duration]",
+      "resume": "Clause 5 - Duration",
+      "implications": "Cette clause fixe la durée d'engagement.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 3",
+          "title": "Durée du bail",
+          "summary": "Le contrat de location est conclu pour une durée minimale de trois ans (personne physique) ou six ans (personne morale). Renouvellement tacite sauf co...",
+          "relevance": "82.8%"
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 5",
+          "title": "Préavis du locataire",
+          "summary": "Le locataire peut résilier avec un préavis de 3 mois (réduit à 1 mois pour mutation, perte d'emploi, RSA, AAH, santé, +60 ans). Notification par LRAR ...",
+          "relevance": "79.5%"
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 3 (Durée du bail): Le contrat de location est conclu pour une durée minimale de trois ans (personne physique) ou six ans (personne morale). Renouvellement tacite sauf congé....",
+      "search_method": "semantic"
+    },
+    {
+      "clause_number": 6,
+      "clause_text": "Article 6  - Travaux\nLe locataire s'engage à entretenir le logement en bon état.\nLes grosses réparations restent à la charge du propriétaire.\n\n",
+      "full_text": "Article 6  - Travaux\nLe locataire s'engage à entretenir le logement en bon état.\nLes grosses réparations restent à la charge du propriétaire.\n\n",
+      "clause_type": "general",
+      "context": "[Contrat: Bail d'habitation, Clause 6, Type: general]",
+      "resume": "Clause 6 - General",
+      "implications": "Cette clause établit les droits et obligations des parties.",
+      "risques": "✓ Aucun risque majeur détecté.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟢 Clause acceptable",
+      "risk_level": "low",
+      "legal_references": [
+        {
+          "source": "Code Civil",
+          "article": "Article 1729",
+          "title": "Réparations locatives",
+          "summary": "Le preneur est tenu des réparations locatives ou de menu entretien, conformément à la liste par décret. Le locataire assure l'entretien courant....",
+          "relevance": "88.4%"
+        },
+        {
+          "source": "Code Civil",
+          "article": "Article 1728",
+          "title": "Obligations du locataire",
+          "summary": "Le preneur doit : 1) User en bon père de famille (usage normal, entretien, pas de dégradations), 2) Payer le loyer et charges aux dates convenues....",
+          "relevance": "84.1%"
+        }
+      ],
+      "legal_context": "Selon Code Civil Article 1729 (Réparations locatives): Le preneur est tenu des réparations locatives ou de menu entretien, conformément à la liste par décret. Le locataire assure l'entretien courant....",
+      "search_method": "semantic"
+    },
+    {
+      "clause_number": 7,
+      "clause_text": "Article 7  - Clause résolutoire\nEn cas de non-paiement du loyer, le bail sera résilié de plein droit.",
+      "full_text": "Article 7  - Clause résolutoire\nEn cas de non-paiement du loyer, le bail sera résilié de plein droit.",
+      "clause_type": "financial",
+      "context": "[Contrat: Bail d'habitation, Clause 7, Type: financial]",
+      "resume": "Clause 7 - Financial",
+      "implications": "Cette clause définit les obligations financières des parties.",
+      "risques": "⚡ Clause nécessitant une vérification approfondie.",
+      "conformite": "Conforme au droit français",
+      "recommandation": "🟡 Demander une clarification ou modification",
+      "risk_level": "medium",
+      "legal_references": [
+        {
+          "source": "Loi 89-462",
+          "article": "Article 4",
+          "title": "Loyer du bail renouvelé",
+          "summary": "Lors du renouvellement, le bailleur peut proposer un nouveau loyer. En cas de désaccord, le juge fixe le loyer selon les loyers du voisinage....",
+          "relevance": "72.1%"
+        },
+        {
+          "source": "Loi 89-462",
+          "article": "Article 24",
+          "title": "Clause résolutoire",
+          "summary": "Joue uniquement pour : non-paiement loyer/charges, non-paiement dépôt, défaut d'assurance. Procédure : mise en demeure LRAR, 2 mois pour régulariser, ...",
+          "relevance": "66.0%"
+        }
+      ],
+      "legal_context": "Selon Loi 89-462 Article 4 (Loyer du bail renouvelé): Lors du renouvellement, le bailleur peut proposer un nouveau loyer. En cas de désaccord, le juge fixe le loyer selon les loyers du voisinage....",
+      "search_method": "semantic"
+    }
+  ],
+  "risks": [
+    {
+      "clause_number": 3,
+      "clause_type": "financial",
+      "clause_preview": "Article 3  - Loyer\nLe loyer mensuel est fixé à 1200 euros, charges comprises.\nLe loyer sera payable le 1er de chaque mois.\n\n",
+      "issue": "⚡ Clause nécessitant une vérification approfondie.",
+      "severity": "medium",
+      "recommendation": "🟡 Demander une clarification ou modification"
+    },
+    {
+      "clause_number": 7,
+      "clause_type": "financial",
+      "clause_preview": "Article 7  - Clause résolutoire\nEn cas de non-paiement du loyer, le bail sera résilié de plein droit.",
+      "issue": "⚡ Clause nécessitant une vérification approfondie.",
+      "severity": "medium",
+      "recommendation": "🟡 Demander une clarification ou modification"
+    }
+  ],
+  "score": {
+    "global": 81,
+    "conformity": 80,
+    "balance": 85,
+    "clarity": 80,
+    "details": {
+      "total_clauses": 7,
+      "high_risks": 0,
+      "medium_risks": 2,
+      "low_risks": 5
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "important",
+      "action": "Demander une modification",
+      "detail": "Clause 3: 🟡 Demander une clarification ou modification"
+    },
+    {
+      "priority": "important",
+      "action": "Demander une modification",
+      "detail": "Clause 7: 🟡 Demander une clarification ou modification"
+    }
+  ],
+  "metadata": {
+    "total_clauses": 7,
+    "analyzed_clauses": 7,
+    "high_risk_count": 0,
+    "medium_risk_count": 2,
+    "cleaning_stats": {
+      "original_length": 898,
+      "cleaned_length": 896,
+      "reduction_percent": 0.22
+    }
+  }
+}
