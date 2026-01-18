@@ -22,6 +22,9 @@ else:
     # Fallback to standard .env
     load_dotenv()
 
+# Import AI pipeline
+from pipeline import ContractAIPipeline
+
 app = FastAPI(
     title="Contract Analysis AI Service",
     description="AI-powered contract analysis using Hugging Face models",

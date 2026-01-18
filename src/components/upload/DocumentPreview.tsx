@@ -46,7 +46,9 @@ export function DocumentPreview({
                 <div className="w-full max-w-2xl mt-8 bg-slate-900 rounded-lg p-6 font-mono text-sm shadow-xl border border-slate-700">
                     <div className="flex items-center gap-2 text-slate-400 mb-4 border-b border-slate-700 pb-2">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <span className="uppercase text-xs tracking-widest">Console d'activité IA</span>
+                        <span className="uppercase text-xs tracking-widest">
+                            {isAnalyzing ? "Analyse IA en cours" : "Extraction du texte"}
+                        </span>
                     </div>
                     <div className="space-y-2 max-h-[200px] overflow-y-auto overflow-x-hidden">
                         {extractedText ? (
@@ -119,12 +121,9 @@ export function DocumentPreview({
                         </div>
                     </div>
 
-                    <div className="flex-1 bg-white border border-slate-200 rounded-lg p-4 mb-6 shadow-inner max-h-[300px] overflow-y-auto">
+                    <div className="flex-1 bg-white border border-slate-200 rounded-lg p-4 mb-6 shadow-inner max-h-[500px] overflow-y-auto">
                         <p className="text-sm text-slate-600 font-mono whitespace-pre-wrap leading-relaxed">
-                            {extractedText
-                                ? extractedText.slice(0, 500) + (extractedText.length > 500 ? '...' : '')
-                                : "Aucun texte détecté. Le document semble être une image sans texte lisible."
-                            }
+                            {extractedText || "Aucun texte détecté. Le document semble être une image sans texte lisible."}
                         </p>
                     </div>
 
