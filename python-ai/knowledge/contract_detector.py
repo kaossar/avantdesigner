@@ -41,6 +41,14 @@ class ContractTypeDefinition:
     legal_codes: List[str]
     priority: int = 1  # Higher = more specific
 
+@dataclass
+class ClauseType:
+    id: str
+    name: str
+    risk_level: str # 'HIGH', 'MEDIUM', 'LOW'
+    keywords: List[str]
+    description: str
+
 class ComprehensiveContractDetector:
     """
     Intelligent contract type detection system
@@ -50,6 +58,98 @@ class ComprehensiveContractDetector:
     def __init__(self):
         self.contract_types = self._build_contract_database()
         self.legal_references = self._build_legal_database()
+        self.common_clauses = self._build_clause_database()
+
+    def _build_clause_database(self) -> List[ClauseType]:
+        """Build database of transversal clauses to detect"""
+        return [
+            ClauseType(
+                id='tacite_reconduction',
+                name='Tacite Reconduction',
+                risk_level='MEDIUM',
+                keywords=['tacite reconduction', 'renouvellement automatique', 'reconduction automatique', 'renouvelable par tacite'],
+                description='Le contrat se renouvelle automatiquement sauf résiliation dans les délais.'
+            ),
+            ClauseType(
+                id='resiliation_frais',
+                name='Frais de Résiliation',
+                risk_level='MEDIUM',
+                keywords=['frais de résiliation', 'indemnité de rupture', 'pénalité de résiliation', 'frais de dossier'],
+                description='Des frais peuvent être appliqués en cas de rupture du contrat.'
+            ),
+            ClauseType(
+                id='clause_penale',
+                name='Clause Pénale',
+                risk_level='HIGH',
+                keywords=['clause pénale', 'dommages et intérêts forfaitaires', 'indemnité forfaitaire', 'sanction pécuniaire'],
+                description='Montant forfaitaire à payer en cas d\'inexécution des obligations.'
+            ),
+            ClauseType(
+                id='competence_territoriale',
+                name='Clause de Compétence Territoriale',
+                risk_level='LOW',
+                keywords=['tribunal compétent', 'attribution de juridiction', 'tribunaux de', 'droit applicable'],
+                description='Définit quel tribunal sera saisi en cas de litige (souvent celui du siège de l\'entreprise).'
+            ),
+            ClauseType(
+                id='limitation_responsabilite',
+                name='Limitation de Responsabilité',
+                risk_level='HIGH',
+                keywords=['limitation de responsabilité', 'sauf faute lourde', 'plafond d\'indemnisation', 'décline toute responsabilité'],
+                description='Limite le montant des dommages et intérêts dus par le professionnel.'
+            ),
+            ClauseType(
+                id='donnees_personnelles',
+                name='Clause RGPD / Données',
+                risk_level='LOW',
+                keywords=['rgpd', 'données personnelles', 'informatique et libertés', 'droit d\'accès'],
+                description='Mentions obligatoires sur le traitement des données personnelles.'
+            ),
+            ClauseType(
+                id='force_majeure',
+                name='Force Majeure',
+                risk_level='LOW',
+                keywords=['force majeure', 'cas fortuit', 'imprévisible', 'irrésistible'],
+                description='Événements exonérant les parties de leurs responsabilités.'
+            ),
+            ClauseType(
+                id='clause_abusive',
+                name='Clause Potentiellement Abusive',
+                risk_level='HIGH',
+                keywords=['le professionnel se réserve le droit de modifier', 'sans préavis', 'discrétionnaire', 'renonce à tout recours'],
+                description='Clause créant un déséquilibre significatif (à vérifier manuellement).'
+            )
+        ]
+
+    # ... [Previous methods: _build_contract_database, _build_legal_database] ...
+
+    def detect_transversal_clauses(self, text: str) -> List[Dict]:
+        """
+        Detect standard clauses present in the text regardless of contract type.
+        Returns a list of detected clauses with snippets.
+        """
+        text_lower = text.lower()
+        detected_clauses = []
+
+        for clause in self.common_clauses:
+            matches = []
+            for kw in clause.keywords:
+                if kw in text_lower:
+                    matches.append(kw)
+            
+            if matches:
+                # Basic confidence based on keyword matches (1 match is enough for binary findings, but more is better)
+                # We could add snippet extraction here later
+                detected_clauses.append({
+                    'id': clause.id,
+                    'name': clause.name,
+                    'risk_level': clause.risk_level,
+                    'description': clause.description,
+                    'matches': matches
+                })
+        
+        return detected_clauses
+
     
     def _build_contract_database(self) -> List[ContractTypeDefinition]:
         """Build comprehensive contract type database"""
