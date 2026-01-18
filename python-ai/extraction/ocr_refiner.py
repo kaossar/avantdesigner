@@ -18,7 +18,7 @@ class OCRTextRefiner:
     
     def __init__(self):
         self.model_name = "pszemraj/flan-t5-base-grammar-synthesis"
-        self.api_url = f"https://api-inference.huggingface.co/models/{self.model_name}"
+        self.api_url = f"https://huggingface.co/api/models/{self.model_name}"
         self.api_token = os.getenv("HUGGINGFACE_API_TOKEN", "")  # Optional, works without token but slower
         
         # Strict prompt to prevent creative rewriting
