@@ -112,7 +112,7 @@ class OCRService:
 
             duration_ms = int((time.time() - start_time) * 1000)
 
-            # 4️⃣ Post-process and clean OCR text
+            # 4️⃣ Post-process and clean OCR text (Couche 1: Déterministe)
             from extraction.ocr_cleaner import ocr_cleaner
             cleaned_result = ocr_cleaner.clean_text(text)
             text = cleaned_result['cleaned']  # Use cleaned version
@@ -121,7 +121,20 @@ class OCRService:
             if cleaned_result['improvement_score'] > 5:
                 logger.info(f"✨ OCR text improved by {cleaned_result['improvement_score']}%")
 
-            # 5️⃣ Confidence estimation (simple & stable)
+            # 5️⃣ AI Grammar Refinement (Couche 2: IA Safe) - OPTIONAL
+            # Only if HuggingFace API is available and text is reasonable length
+            try:
+                from extraction.ocr_refiner import ocr_refiner
+                refined_result = ocr_refiner.refine_text(text, timeout=5)
+                
+                if refined_result['used_ai']:
+                    text = refined_result['refined']
+                    logger.info(f"✨ AI refinement applied (confidence: {refined_result['confidence']:.2f})")
+            except Exception as e:
+                logger.warning(f"⚠️ AI refinement skipped: {e}")
+                # Continue with Couche 1 text (safe fallback)
+
+            # 6️⃣ Confidence estimation (simple & stable)
             words = text.split()
             # Simple heuristic: longer text = likely improved confidence up to a point
             confidence = min(0.99, 0.6 + (len(words) / 2000))
