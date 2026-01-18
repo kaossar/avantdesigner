@@ -6,6 +6,7 @@ interface DocumentPreviewProps {
     imageSrc?: string | null;
     extractedText: string | null;
     isScanning: boolean;
+    isAnalyzing?: boolean; // NEW: distinguish AI analysis from OCR
     onAnalyze: () => void;
     onReset: () => void;
 }
@@ -15,20 +16,31 @@ export function DocumentPreview({
     imageSrc,
     extractedText,
     isScanning,
+    isAnalyzing = false,
     onAnalyze,
     onReset
 }: DocumentPreviewProps) {
-    if (isScanning) {
+    // Determine current activity for user-friendly messages
+    const isProcessing = isScanning || isAnalyzing;
+    const activityTitle = isAnalyzing
+        ? "Analyse IA en cours..."
+        : isScanning
+            ? "Extraction du texte en cours..."
+            : "Analyse en cours...";
+
+    const activityEmoji = isAnalyzing ? "🧠" : "📄";
+
+    if (isProcessing) {
         return (
             <div className="flex flex-col items-center justify-center py-10 w-full animate-in fade-in zoom-in duration-300">
                 <div className="relative w-20 h-20 mb-6">
                     <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
                     <div className="absolute inset-0 border-4 border-primary-600 rounded-full border-t-transparent animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-2xl">🤖</span>
+                        <span className="text-2xl">{activityEmoji}</span>
                     </div>
                 </div>
-                <h3 className="text-xl font-serif font-bold text-primary-900 mb-2 animate-pulse">Analyse en cours...</h3>
+                <h3 className="text-xl font-serif font-bold text-primary-900 mb-2 animate-pulse">{activityTitle}</h3>
 
                 {/* Real-time Logs Display */}
                 <div className="w-full max-w-2xl mt-8 bg-slate-900 rounded-lg p-6 font-mono text-sm shadow-xl border border-slate-700">

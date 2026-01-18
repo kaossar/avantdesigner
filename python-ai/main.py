@@ -202,6 +202,100 @@ async def analyze_file(
         logger.error(f"❌ Initialization failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Init failed: {str(e)}")
 
+@app.post("/extract-text")
+async def extract_text(
+    file: UploadFile = File(...),
+):
+    """
+    Extract text from file using OCR (streaming, no AI analysis)
+    Returns NDJSON stream with OCR progress
+    """
+    try:
+        logger.info(f"📂 OCR-only Request: {file.filename}")
+        
+        async def ocr_only_generator(file_obj):
+            """Generator for OCR-only processing"""
+            yield json.dumps({"type": "info", "message": "Connexion établie. Lecture du fichier..."}) + "\n"
+            
+            contents = await file_obj.read()
+            yield json.dumps({"type": "info", "message": "Fichier chargé. Démarrage OCR..."}) + "\n"
+            
+            # Determine if PDF or image
+            if file_obj.content_type == "application/pdf":
+                # Check if native PDF
+                try:
+                    is_native = False
+                    with fitz.open(stream=contents, filetype="pdf") as doc:
+                        if len(doc) > 0 and len(doc[0].get_text().strip()) > 50:
+                            is_native = True
+                    
+                    if is_native:
+                        yield json.dumps({"type": "info", "message": "PDF natif détecté (Extraction rapide)..."}) + "\n"
+                        text = ""
+                        with fitz.open(stream=contents, filetype="pdf") as doc:
+                            for page in doc:
+                                text += page.get_text() + "\n"
+                        yield json.dumps({"type": "ocr_complete", "full_text": text, "message": "Extraction terminée."}) + "\n"
+                    else:
+                        # Scanned PDF - use OCR service
+                        async for event in ocr_service.process_scanned_pdf_stream(contents):
+                            yield json.dumps(event) + "\n"
+                except:
+                    # Fallback to OCR
+                    async for event in ocr_service.process_scanned_pdf_stream(contents):
+                        yield json.dumps(event) + "\n"
+            else:
+                # Image OCR
+                yield json.dumps({"type": "page_start", "page": 1, "message": "Traitement image..."}) + "\n"
+                text = ocr_service.extract_text_from_image(contents)
+                yield json.dumps({"type": "ocr_complete", "full_text": text, "message": "Image analysée."}) + "\n"
+            
+            yield json.dumps({"type": "complete", "message": "Extraction terminée."}) + "\n"
+        
+        return StreamingResponse(
+            ocr_only_generator(file),
+            media_type="application/x-ndjson"
+        )
+            
+    except Exception as e:
+        logger.error(f"❌ OCR extraction failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"OCR failed: {str(e)}")
+
+from pydantic import BaseModel
+
+class TextAnalysisRequest(BaseModel):
+    text: str
+    contract_type: str = "auto"
+
+@app.post("/analyze-text")
+async def analyze_text(request: TextAnalysisRequest):
+    """
+    Analyze pre-extracted text using AI pipeline
+    Returns complete analysis results
+    """
+    try:
+        logger.info(f"🧠 Analyzing text ({len(request.text)} chars)")
+        
+        if not request.text.strip():
+            raise HTTPException(status_code=400, detail="Text cannot be empty")
+        
+        # Initialize AI pipeline
+        pipeline = ContractAIPipeline()
+        
+        # Process contract
+        result = await pipeline.process(request.text)
+        
+        # Add original text to result
+        result["text"] = request.text
+        
+        logger.info(f"✅ Analysis complete: {result['metadata']['total_clauses']} clauses, {result['metadata']['high_risk_count']} high risks")
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"❌ Text analysis failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
 @app.post("/export-pdf")
 async def export_pdf(analysis_data: dict):
     """Export analysis results as professional PDF report"""

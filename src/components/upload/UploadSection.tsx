@@ -12,6 +12,7 @@ export function UploadSection() {
     const [activeTab, setActiveTab] = useState<'upload' | 'text' | 'camera'>('upload');
     const [step, setStep] = useState<'input' | 'preview' | 'results'>('input');
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false); // NEW: separate state for AI analysis
     const [processingStatus, setProcessingStatus] = useState<string>('');
     const [processingProgress, setProcessingProgress] = useState<number>(0);
 
@@ -36,9 +37,9 @@ export function UploadSection() {
 
             const formData = new FormData();
             formData.append('file', fileObj);
-            formData.append('contract_type', 'auto');
 
-            const response = await fetch('/api/ai-upload-analyze', {
+            // Use OCR-only endpoint
+            const response = await fetch('/api/ai-extract-text', {
                 method: 'POST',
                 body: formData,
             });
@@ -53,7 +54,6 @@ export function UploadSection() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
-            let finalResult = null;
             let fullTextLog = "";
 
             while (true) {
@@ -99,14 +99,15 @@ export function UploadSection() {
                                     break;
                                 case 'ocr_complete':
                                     fullTextLog = msg.full_text; // Keep text separately
-                                    setExtractedText(current => `${current}\n✅ OCR Terminé. Analyse IA en cours...`);
+                                    setExtractedText(fullTextLog); // Show complete OCR text
                                     break;
                                 case 'info':
                                 case 'stage':
                                     setExtractedText(current => `${current}\nℹ️ ${msg.message}`);
                                     break;
                                 case 'complete':
-                                    finalResult = msg.data;
+                                    // OCR complete - text is ready for analysis
+                                    setExtractedText(fullTextLog || "Texte extrait.");
                                     break;
                                 case 'error':
                                     throw new Error(msg.error);
@@ -120,29 +121,12 @@ export function UploadSection() {
                 }
             }
 
-            if (finalResult) {
-                const data = finalResult;
-
-                // Keep the full OCR text visible (don't replace with summary)
-                if (fullTextLog && fullTextLog.trim()) {
-                    setExtractedText(fullTextLog); // Show complete OCR text
-                } else if (data.text) {
-                    setExtractedText(data.text);
-                }
-
-                if (data.data || data) {
-                    setAnalysisReport(data.data || data);
-                    if (autoProceed) {
-                        setTimeout(() => setStep('results'), 500);
-                    }
-                }
-            } else {
-                if (!fullTextLog) throw new Error("L'analyse s'est terminée sans résultat.");
-            }
+            // OCR complete - don't auto-proceed to analysis
+            // User must click "Lancer l'analyse" button
 
         } catch (error) {
             console.error('Processing error:', error);
-            let msg = "Erreur lors de l'analyse du fichier.";
+            let msg = "Erreur lors de l'extraction du texte.";
             if (error instanceof Error) {
                 if (error.message.includes('fetch')) {
                     msg = "Le serveur ne répond pas. Vérifiez la connexion.";
@@ -181,14 +165,56 @@ export function UploadSection() {
         await processFile(textFile, true);
     };
 
-    const handleAnalyzeClick = () => {
+    const handleAnalyzeClick = async () => {
         if (analysisReport) {
+            // Already analyzed - just show results
             setStep('results');
-        } else if (file) {
-            alert("Réanalyse en cours...");
-            processFile(file, true);
-        } else if (extractedText) {
-            handleTextSubmit(extractedText);
+            return;
+        }
+
+        if (!extractedText || !extractedText.trim()) {
+            alert("Aucun texte à analyser. Veuillez d'abord extraire le texte d'un document.");
+            return;
+        }
+
+        try {
+            setIsAnalyzing(true);
+            setExtractedText(current => `${current}\n\n🧠 Lancement de l'analyse IA...`);
+
+            // Send extracted text to AI analysis endpoint
+            const response = await fetch('/api/ai-analyze-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: extractedText,
+                    contract_type: 'auto',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur serveur: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            // Set analysis results
+            setAnalysisReport(result);
+            setExtractedText(current => `${current}\n✅ Analyse terminée avec succès !`);
+
+            // Auto-proceed to results
+            setTimeout(() => setStep('results'), 800);
+
+        } catch (error) {
+            console.error('Analysis error:', error);
+            let msg = "\n\n❌ Erreur lors de l'analyse IA.";
+            if (error instanceof Error) {
+                msg += ` ${error.message}`;
+            }
+            setExtractedText(current => `${current}${msg}`);
+        } finally {
+            setIsAnalyzing(false);
         }
     };
 
@@ -247,6 +273,7 @@ export function UploadSection() {
                             imageSrc={imagePreview}
                             extractedText={extractedText}
                             isScanning={isProcessing}
+                            isAnalyzing={isAnalyzing}
                             onAnalyze={handleAnalyzeClick}
                             onReset={reset}
                         />
